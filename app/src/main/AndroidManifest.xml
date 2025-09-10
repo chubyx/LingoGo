@@ -2,7 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
+
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -12,16 +21,45 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LingoGo"
         tools:targetApi="31">
+
         <activity
-            android:name=".MainActivity"
+            android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".MainActivity" android:exported="false"/>
+        <activity android:name=".InitionActivity"/>
         <activity android:name=".ConfigActivity"/>
+        <activity android:name=".PerfilActivity"/>
+        <activity android:name=".CommunityActivity"/>
+        <activity android:name=".GamesActivity"/>
+        <activity android:name=".RegistroActivity"/>
+
+        <activity android:name=".PalabrasFavoritasActivity"/>
+        <activity android:name=".CrearPostActivity"/>
+        <activity android:name=".DetallePostActivity"/>
+        <activity android:name=".UserListActivity"/>
+        <activity android:name=".ChatActivity"/>
+        <activity android:name=".CreateGroupActivity" android:exported="false" />
+        <activity android:name=".GroupChatActivity" android:exported="false" />
+
+        <activity android:name=".VoiceControlActivity" android:exported="false" />
+
+        <activity android:name="com.lingogo.games.PronunciationChallengeActivity" android:exported="false"/>
+        <activity android:name="com.lingogo.games.GrammarQuizActivity"/>
+        <activity android:name=".games.WordMatchActivity" />
+        <activity android:name=".games.ListeningGameActivity" />
+        <activity android:name=".games.StoryBuilderActivity" />
+
+        <activity android:name=".ListaLeccionesActivity" />
+        <activity android:name=".QuizActivity" />
+
+
+
     </application>
 
 </manifest>

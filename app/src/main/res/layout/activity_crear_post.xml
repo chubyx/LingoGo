@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F4F4F4"
+    tools:context=".CrearPostActivity">
+
+    <!-- Barra de Aplicación -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarCrearPost"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/naranja"
+        app:titleTextColor="@color/white" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp"
+                app:contentPadding="16dp">
+
+                <EditText
+                    android:id="@+id/etPostTexto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Escribe tu duda o comparte tu progreso..."
+                    android:minLines="5"
+                    android:gravity="top"
+                    android:background="@android:color/transparent"
+                    android:inputType="textMultiLine" />
+
+            </androidx.cardview.widget.CardView>
+
+            <Button
+                android:id="@+id/btnPublicarPost"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Publicar"
+                android:backgroundTint="@color/naranja"
+                android:textColor="@color/white"
+                android:layout_marginTop="16dp"
+                android:enabled="false"
+                tools:enabled="true" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
