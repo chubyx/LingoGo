@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/splash_gradient_background">
+
+    <ImageView
+        android:id="@+id/ivLogoSplash"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/lingologo"
+        android:alpha="0"
+        android:translationY="50dp"
+        app:layout_constraintBottom_toTopOf="@+id/tvAppNameSplash"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/tvAppNameSplash"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/lingogo"
+        android:textAppearance="?attr/textAppearanceDisplayMedium"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:alpha="0"
+        android:translationY="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/progressBarSplash"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivLogoSplash" />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progressBarSplash"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:layout_marginBottom="16dp"
+        android:indeterminate="true"
+        app:indicatorColor="@android:color/white"
+        app:trackThickness="3dp"
+        android:alpha="0"
+        app:layout_constraintBottom_toTopOf="@+id/tvLoadingSplash"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvAppNameSplash" />
+
+    <TextView
+        android:id="@+id/tvLoadingSplash"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Preparando tu aprendizaje..."
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textColor="#B3FFFFFF"
+        android:alpha="0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressBarSplash" />
+
+    <TextView
+        android:id="@+id/tvVersionSplash"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:alpha="0.7"
+        android:text="v2.0"
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        android:textColor="#B3FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="v2.0" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,23 +1,109 @@
 <resources>
     <string name="app_name">LingoGo</string>
     <string name="lingogo">LingoGo</string>
+    <string name="default_web_client_id" translatable="false">"820060246747-8mh0mrb2807qjc73h0l8ferbuen7vmku.apps.googleusercontent.com"</string>
+
     <string name="tu_profesor_de_ingles_de_bolsillo">Tu profesor de ingles de bolsillo</string>
     <string name="correo_electr_nico">Correo electrónico</string>
     <string name="contrase_a">Contraseña</string>
     <string name="iniciar_sesi_n">Iniciar Sesión</string>
     <string name="no_tienes_cuenta_reg_strate_aqu">¿No tienes cuenta? Regístrate aquí</string>
+    <string name="cerrar_sesi_n">Cerrar Sesión</string>
+
+
+    <string name="inicio_hola_estudiante">Hola, estudiante</string>
+    <string name="inicio_bienvenida_usuario">¡Bienvenido, %1$s!</string>
+    <string name="inicio_listo_aprender">¿Listo para aprender?</string>
+    <string name="inicio_progreso_hoy">Tu progreso hoy</string>
+    <string name="inicio_racha">Racha</string>
+    <string name="inicio_puntos">Puntos</string>
+    <string name="inicio_continuar_leccion">Continuar lección</string>
+    <string name="inicio_leccion_detalle">Lección 5: Presente Simple</string>
+    <string name="inicio_leccion_progreso">Progreso: 75% completado</string>
+    <string name="inicio_mi_progreso">Mi Progreso</string>
+    <string name="inicio_perfil">Perfil</string>
+    <string name="inicio_favoritas">Favoritas</string>
+    <string name="inicio_comunidad">Comunidad</string>
+    <string name="inicio_juegos">Juegos</string>
+    <string name="inicio_ajustes">Ajustes</string>
+    <string name="inicio_tip_del_dia">Tip del día: ¡Practica 5 minutos!</string>
+
     <string name="configuraci_n">⚙️ Configuración</string>
+    <string name="config_categoria_general">General</string>
     <string name="idioma_de_la_aplicaci_n">Idioma de la aplicación</string>
+    <string name="config_idioma_subtitulo">Selecciona tu idioma de preferencia</string>
+    <string name="config_categoria_apariencia">Apariencia y Sonido</string>
     <string name="notificaciones">Notificaciones</string>
     <string name="activar_notificaciones">Activar notificaciones</string>
     <string name="tema">Tema</string>
     <string name="claro">Claro</string>
-    <string name="cerrar_sesi_n">Cerrar Sesión</string>
     <string name="oscuro">Oscuro</string>
-    <string-array name="idiomas">
-        <item>Español</item>
-        <item>Inglés</item>
-        <item>Francés</item>
-        <item>Alemán</item>
+
+    <string name="favoritas_titulo">Mis Palabras Favoritas</string>
+    <string name="favoritas_no_hay">Aún no tienes palabras favoritas</string>
+    <string name="favoritas_borrar">Borrar palabra</string>
+
+    <string name="minijuegos">Minijuegos</string>
+    <string name="progreso_diario">Progreso Diario</string>
+    <string name="game_conecta_palabras">Conecta Palabras</string>
+    <string name="game_escucha_repite">Escucha y Repite</string>
+    <string name="game_quiz_gramatica">Quiz Gramática</string>
+    <string name="game_crea_historias">Crea Historias</string>
+    <string name="game_memoria_visual">Memoria Visual</string>
+    <string name="game_desafio_pronunciacion">Desafío Pronunciación</string>
+    <string name="logros">Logros</string>
+    <string name="game_desafio_diario">Comenzar desafío diario</string>
+
+    <string name="inicio_escribe_palabra_hint">Escribe una palabra</string>
+    <string name="inicio_guardar">Guardar</string>
+    <!-- Strings para RegistroActivity -->
+    <string name="registro_titulo">Registro de Usuario</string>
+    <string name="registro_nombre_completo">Nombre completo</string>
+    <string name="registro_nombre_usuario">Nombre de usuario</string>
+    <string name="registro_telefono">Número de teléfono</string>
+    <string name="registro_fecha_nacimiento">Fecha de nacimiento (DD/MM/AAAA)</string>
+    <string name="registro_direccion">Dirección</string>
+    <string name="registro_genero">Género</string>
+    <string name="registro_contrasena">Contraseña</string>
+    <string name="registro_confirmar_contrasena">Confirmar contraseña</string>
+    <string name="registro_boton_registrar">Registrarse</string>
+    <string name="registro_ir_a_login">¿Ya tienes cuenta? Inicia sesión</string>
+    <string name="registro_error_obligatorios">Nombre, Usuario, Email y Contraseña son obligatorios</string>
+    <string name="registro_error_contrasena_corta">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="registro_error_contrasenas_no_coinciden">Las contraseñas no coinciden</string>
+    <string name="registro_error_id">Error al obtener ID de usuario.</string>
+    <string name="registro_exito">Cuenta creada y datos guardados.</string>
+    <string name="registro_error_firestore">Error al guardar datos: %1$s</string>
+    <string name="registro_error_auth">Error en el registro: %1$s</string>
+    <string name="language_picker_title">Selecciona un idioma</string>
+    <string name="error_palabra_vacia">La palabra no puede estar vacía</string>
+
+
+    <string-array name="idiomas_tags">
+        <item>#Español</item>
+        <item>#Inglés</item>
+        <item>#Francés</item>
+        <item>#Alemán</item>
+        <item>#Italiano</item>
     </string-array>
+
+<string name="game_listening_titulo">Escucha y Repite</string>
+<string name="listening_escuchar">Escuchar</string>
+<string name="listening_repetir">Repetir</string>
+<string name="listening_siguiente">Siguiente</string>
+<string name="hablar_presiona_y_habla">Presiona el micrófono y habla</string>
+<string name="error_microfono">Error al iniciar micrófono</string>
+    <string name="game_story_titulo">Crea Historias</string>
+    <string name="story_instruccion">Completa la frase con la palabra correcta.</string>
+    <string name="story_comprobar">Comprobar</string>
+    <string name="story_siguiente">Siguiente Frase</string>
+    <string name="story_correcto">¡Correcto! La historia tiene sentido.</string>
+    <string name="story_incorrecto">Mmm, eso no suena bien. Intenta otra vez.</string>
+    <string name="story_seleccion">Selecciona...</string>
+    <string name="inicio_voz_iot">Control por Voz IoT</string>
+    <string name="voz_iot_titulo">Comandos de Casa</string>
+    <string name="voz_iot_instruccion">Toca el micrófono y di:\n"Encender luz", "Apagar luz", "Abrir puerta"</string>
+    <string name="voz_iot_escuchando">Escuchando...</string>
+    <string name="voz_iot_enviado">Comando enviado: %1$s</string>
+    <string name="voz_iot_error">No te entendí, intenta de nuevo.</string>
 </resources>

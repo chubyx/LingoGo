@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_buscar_usuarios"
+        android:title="Buscar Usuarios"
+        android:icon="@android:drawable/ic_menu_search"
+        app:showAsAction="ifRoom"
+        app:tint="@color/white" />
+
+    <!-- ¡NUEVO! Botón para Crear Grupo -->
+    <item
+        android:id="@+id/menu_crear_grupo"
+        android:title="Crear Grupo"
+        android:icon="@android:drawable/ic_menu_add"
+        app:showAsAction="ifRoom"
+        app:tint="@color/white" />
+</menu>

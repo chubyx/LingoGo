@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "820060246747",
+    "project_id": "lingogo-app-573cb",
+    "storage_bucket": "lingogo-app-573cb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:820060246747:android:0e576413163a5cf22ef2fe",
+        "android_client_info": {
+          "package_name": "com.example.lingogo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "820060246747-59vo8sugh97hii41brkghhkhjruc1u6v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.lingogo",
+            "certificate_hash": "b770399ec1bd5d6eea8c83b5f4259b13e71c1bc7"
+          }
+        },
+        {
+          "client_id": "820060246747-6af80pg7cnj4kqpiq6em9a6oinnhssbe.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.lingogo",
+            "certificate_hash": "b1a9194ccf8870419277e2864b2d17bbba3416d4"
+          }
+        },
+        {
+          "client_id": "820060246747-6f3n2uf9o5fqbl1sbekjb86n4o6t91s6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.lingogo",
+            "certificate_hash": "6e4b8481662473ca564f01050129c17f75b6600b"
+          }
+        },
+        {
+          "client_id": "820060246747-8mh0mrb2807qjc73h0l8ferbuen7vmku.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6AW2QrKAHU1poHfi2kkM6Ity_Gf5WMFI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "820060246747-8mh0mrb2807qjc73h0l8ferbuen7vmku.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
