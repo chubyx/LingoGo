@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#FFF3E0"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/imgPerfil"
+        android:layout_gravity="center"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/foto"
+        android:contentDescription="Foto de Perfil"
+        android:scaleType="centerCrop"
+        android:background="@drawable/circle_background"
+        android:clipToOutline="true"/>
+
+    <TextView
+        android:id="@+id/NombreUsuario"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Perfil"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"/>
+
+    <LinearLayout
+        android:id="@+id/contenedorTags"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal" />
+
+    <Button
+        android:id="@+id/btnCambiarFoto"
+        android:backgroundTint="@color/naranja"
+        android:textColor="#FFFFFF"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Cambiar foto"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Escribe tu nombre"
+        android:inputType="textPersonName"
+        android:layout_marginTop="12dp"
+        android:padding="10dp"/>
+
+    <Button
+
+        android:id="@+id/btnCambiarNombre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Guardar Nombre"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ingresa tu Descipcion"
+        android:inputType="textPersonName"
+        android:layout_marginTop="12dp"
+        android:padding="10dp"/>
+
+    <Spinner
+        android:id="@+id/spinnerTags"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/idiomas_tags"
+        android:layout_marginTop="100dp"/>
+
+    <Button
+        android:id="@+id/btnAgregarTag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Agregar Tag"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center"
+        />
+
+
+    <!--    <EditText-->
+<!--        android:id="@+id/edtDescripcion"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="120dp"-->
+<!--        android:hint="Escribe tu Descripcion..."-->
+<!--        android:background="@drawable/rect_background"-->
+<!--        android:padding="12dp"-->
+<!--        android:gravity="top"-->
+<!--        android:inputType="textMultiLine"-->
+<!--        android:scrollbars="vertical"/>-->
+</LinearLayout>
+
