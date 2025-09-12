@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="config_categoria_general">General</string>
+    <string name="config_idioma_subtitulo">Selecciona tu idioma de preferencia</string>
+    <string name="config_categoria_apariencia">Apariencia y Sonido</string>
+</resources>

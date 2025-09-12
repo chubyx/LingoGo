@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Strings para activity_inicio.xml -->
+
+    <!-- Header -->
+    <string name="inicio_hola_estudiante">Hola estudiante</string>
+    <string name="inicio_listo_aprender">Listo para aprender</string>
+
+    <!-- Tarjeta de Progreso -->
+    <string name="inicio_progreso_hoy">Tu progreso hoy</string>
+    <string name="inicio_racha">racha</string>
+    <string name="inicio_puntos">Puntos</string>
+
+    <!-- Tarjeta de Lección Principal -->
+    <string name="inicio_continuar_leccion">Continuar lección</string>
+    <string name="inicio_leccion_detalle">Lección 5 presente simple</string>
+    <string name="inicio_leccion_progreso">Progreso 75 completado</string>
+
+    <!-- Opciones Secundarias -->
+    <string name="inicio_mi_progreso">Mi progreso</string>
+    <string name="inicio_perfil">Perfil</string>
+    <string name="inicio_comunidad">Comunidad</string>
+    <string name="inicio_juegos">Juegos</string>
+    <string name="inicio_ajustes">Ajustes</string>
+
+    <!-- Tarjeta de Motivación -->
+    <string name="inicio_tip_emoji">💡</string>
+    <string name="inicio_tip_del_dia">Tip del dia practica 5 minutos</string>
+
+</resources>

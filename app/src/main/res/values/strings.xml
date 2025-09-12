@@ -14,6 +14,7 @@
     <string name="claro">Claro</string>
     <string name="cerrar_sesi_n">Cerrar Sesión</string>
     <string name="oscuro">Oscuro</string>
+    <string name="default_web_client_id">"820060246747-8mh0mrb2807qjc73h0l8ferbuen7vmku.apps.googleusercontent.com"</string>
     <string-array name="idiomas">
         <item>Español</item>
         <item>Inglés</item>
