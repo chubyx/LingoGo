@@ -1,0 +1,82 @@
+<resources>
+    <string name="app_name">LingoGo</string>
+    <string name="lingogo">LingoGo</string>
+
+    <string name="tu_profesor_de_ingles_de_bolsillo">Votre professeur d\'anglais de poche</string>
+    <string name="correo_electr_nico">E-mail</string>
+    <string name="contrase_a">Mot de passe</string>
+    <string name="iniciar_sesi_n">Connexion</string>
+    <string name="no_tienes_cuenta_reg_strate_aqu">Pas de compte ? Inscrivez-vous ici</string>
+    <string name="cerrar_sesi_n">Déconnexion</string>
+
+    <string name="inicio_hola_estudiante">Bonjour, étudiant !</string>
+    <string name="inicio_bienvenida_usuario">Bienvenue, %1$s !</string>
+    <string name="inicio_listo_aprender">Prêt à apprendre ?</string>
+    <string name="inicio_progreso_hoy">Vos progrès aujourd\'hui</string>
+    <string name="inicio_racha">Série</string>
+    <string name="inicio_puntos">Points</string>
+    <string name="inicio_continuar_leccion">Continuer la leçon</string>
+    <string name="inicio_leccion_detalle">Leçon 5 : Présent simple</string>
+    <string name="inicio_leccion_progreso">Progrès : 75% terminé</string>
+    <string name="inicio_mi_progreso">Mon Progrès</string>
+    <string name="inicio_perfil">Profil</string>
+    <string name="inicio_favoritas">Favoris</string>
+    <string name="inicio_comunidad">Communauté</string>
+    <string name="inicio_juegos">Jeux</string>
+    <string name="inicio_ajustes">Paramètres</string>
+    <string name="inicio_tip_del_dia">Conseil du jour : Entraînez-vous 5 minutes !</string>
+
+    <string name="configuraci_n">⚙️ Paramètres</string>
+    <string name="config_categoria_general">Général</string>
+    <string name="idioma_de_la_aplicaci_n">Langue de l\'application</string>
+    <string name="config_idioma_subtitulo">Choisissez votre langue préférée</string>
+    <string name="config_categoria_apariencia">Apparence et Son</string>
+    <string name="notificaciones">Notifications</string>
+    <string name="activar_notificaciones">Activer les notifications</string>
+    <string name="tema">Thème</string>
+    <string name="claro">Clair</string>
+    <string name="oscuro">Sombre</string>
+
+    <string name="favoritas_titulo">Mes Mots Favoris</string>
+    <string name="favoritas_no_hay">Vous n\'avez pas encore de mots favoris</string>
+    <string name="favoritas_borrar">Supprimer le mot</string>
+
+    <string name="minijuegos">Mini-jeux</string>
+    <string name="progreso_diario">Progrès Quotidien</string>
+    <string name="game_conecta_palabras">Associer les Mots</string>
+    <string name="game_escucha_repite">Écouter et Répéter</string>
+    <string name="game_quiz_gramatica">Quiz de Grammaire</string>
+    <string name="game_crea_historias">Créer des Histoires</string>
+    <string name="game_memoria_visual">Jeu de Mémoire</string>
+    <string name="game_desafio_pronunciacion">Défi de Prononciation</string>
+    <string name="logros">Succès</string>
+    <string name="game_desafio_diario">Commencer le défi quotidien</string>
+    <string name="inicio_escribe_palabra_hint">Écrire un mot</string>
+    <string name="inicio_guardar">Sauvegarder</string>
+    <string name="registro_titulo">Inscription de l\'utilisateur</string>
+    <string name="registro_nombre_completo">Nom complet</string>
+    <string name="registro_nombre_usuario">Nom d\'utilisateur</string>
+    <string name="registro_telefono">Numéro de téléphone</string>
+    <string name="registro_fecha_nacimiento">Date de naissance (JJ/MM/AAAA)</string>
+    <string name="registro_direccion">Adresse</string>
+    <string name="registro_genero">Genre</string>
+    <string name="registro_contrasena">Mot de passe</string>
+    <string name="registro_confirmar_contrasena">Confirmer le mot de passe</string>
+    <string name="registro_boton_registrar">S\'inscrire</string>
+    <string name="registro_ir_a_login">Vous avez déjà un compte ? Se connecter</string>
+    <string name="registro_error_obligatorios">Le nom, le nom d\'utilisateur, l\'e-mail et le mot de passe sont requis</string>
+    <string name="registro_error_contrasena_corta">Le mot de passe doit comporter au moins 6 caractères</string>
+    <string name="registro_error_contrasenas_no_coinciden">Les mots de passe ne correspondent pas</string>
+    <string name="registro_error_id">Erreur lors de l\'obtention de l\'ID utilisateur.</string>
+    <string name="registro_exito">Compte créé et données enregistrées.</string>
+    <string name="registro_error_firestore">Erreur lors de l\'enregistrement des données: %1$s</string>
+    <string name="registro_error_auth">Échec de l\'inscription: %1$s</string>
+    <string name="language_picker_title">Sélectionnez une langue</string>
+    <string-array name="idiomas_tags">
+        <item>#Espagnol</item>
+        <item>#Anglais</item>
+        <item>#Français</item>
+        <item>#Allemand</item>
+        <item>#Italien</item>
+    </string-array>
+</resources>

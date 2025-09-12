@@ -1,0 +1,82 @@
+<resources>
+    <string name="app_name">LingoGo</string>
+    <string name="lingogo">LingoGo</string>
+
+    <string name="tu_profesor_de_ingles_de_bolsillo">あなたのポケット英語教師</string>
+    <string name="correo_electr_nico">メールアドレス</string>
+    <string name="contrase_a">パスワード</string>
+    <string name="iniciar_sesi_n">サインイン</string>
+    <string name="no_tienes_cuenta_reg_strate_aqu">アカウントをお持ちではありませんか？ここで登録</string>
+    <string name="cerrar_sesi_n">サインアウト</string>
+
+    <string name="inicio_hola_estudiante">こんにちは、学生さん！</string>
+    <string name="inicio_bienvenida_usuario">ようこそ、%1$sさん！</string>
+    <string name="inicio_listo_aprender">学ぶ準備はできましたか？</string>
+    <string name="inicio_progreso_hoy">今日の進捗</string>
+    <string name="inicio_racha">連続</string>
+    <string name="inicio_puntos">ポイント</string>
+    <string name="inicio_continuar_leccion">レッスンを続ける</string>
+    <string name="inicio_leccion_detalle">レッスン5：現在形</string>
+    <string name="inicio_leccion_progreso">進捗：75%完了</string>
+    <string name="inicio_mi_progreso">私の進捗</string>
+    <string name="inicio_perfil">プロフィール</string>
+    <string name="inicio_favoritas">お気に入り</string>
+    <string name="inicio_comunidad">コミュニティ</string>
+    <string name="inicio_juegos">ゲーム</string>
+    <string name="inicio_ajustes">設定</string>
+    <string name="inicio_tip_del_dia">今日のヒント：5分間練習しましょう！</string>
+
+    <string name="configuraci_n">⚙️ 設定</string>
+    <string name="config_categoria_general">一般</string>
+    <string name="idioma_de_la_aplicaci_n">アプリの言語</string>
+    <string name="config_idioma_subtitulo">ご希望の言語を選択してください</string>
+    <string name="config_categoria_apariencia">外観とサウンド</string>
+    <string name="notificaciones">通知</string>
+    <string name="activar_notificaciones">通知を有効にする</string>
+    <string name="tema">テーマ</string>
+    <string name="claro">ライト</string>
+    <string name="oscuro">ダーク</string>
+
+    <string name="favoritas_titulo">お気に入りの単語</string>
+    <string name="favoritas_no_hay">お気に入りの単語はまだありません</string>
+    <string name="favoritas_borrar">単語を削除</string>
+
+    <string name="minijuegos">ミニゲーム</string>
+    <string name="progreso_diario">毎日の進捗</string>
+    <string name="game_conecta_palabras">単語マッチ</string>
+    <string name="game_escucha_repite">聞いて繰り返す</string>
+    <string name="game_quiz_gramatica">文法クイズ</string>
+    <string name="game_crea_historias">ストーリー作成</string>
+    <string name="game_memoria_visual">神経衰弱</string>
+    <string name="game_desafio_pronunciacion">発音チャレンジ</string>
+    <string name="logros">実績</string>
+    <string name="game_desafio_diario">デイリーチャレンジを開始</string>
+    <string name="inicio_escribe_palabra_hint">単語を入力</string>
+    <string name="inicio_guardar">保存</string>
+    <string name="registro_titulo">ユーザー登録</string>
+    <string name="registro_nombre_completo">氏名</string>
+    <string name="registro_nombre_usuario">ユーザー名</string>
+    <string name="registro_telefono">電話番号</string>
+    <string name="registro_fecha_nacimiento">生年月日 (日/月/年)</string>
+    <string name="registro_direccion">住所</string>
+    <string name="registro_genero">性別</string>
+    <string name="registro_contrasena">パスワード</string>
+    <string name="registro_confirmar_contrasena">パスワードを確認</string>
+    <string name="registro_boton_registrar">登録</string>
+    <string name="registro_ir_a_login">すでにアカウントをお持ちですか？サインイン</string>
+    <string name="registro_error_obligatorios">名前、ユーザー名、メールアドレス、パスワードは必須です</string>
+    <string name="registro_error_contrasena_corta">パスワードは6文字以上である必要があります</string>
+    <string name="registro_error_contrasenas_no_coinciden">パスワードが一致しません</string>
+    <string name="registro_error_id">ユーザーIDの取得中にエラーが発生しました。</string>
+    <string name="registro_exito">アカウントが作成され、データが保存されました。</string>
+    <string name="registro_error_firestore">データの保存中にエラーが発生しました: %1$s</string>
+    <string name="registro_error_auth">登録に失敗しました: %1$s</string>
+    <string name="language_picker_title">言語を選択</string>
+    <string-array name="idiomas_tags">
+        <item>#スペイン語</item>
+        <item>#英語</item>
+        <item>#フランス語</item>
+        <item>#ドイツ語</item>
+        <item>#イタリア語</item>
+    </string-array>
+</resources>

@@ -1,0 +1,16 @@
+<resources>
+    <string-array name="idiomas">
+        <item>スペイン語</item>
+        <item>英語</item>
+        <item>フランス語</item>
+        <item>ドイツ語</item>
+        <item>ポルトガル語</item>
+        <item>日本語</item>
+    </string-array>
+    <string-array name="generos">
+        <item>無回答</item>
+        <item>男性</item>
+        <item>女性</item>
+        <item>その他</item>
+    </string-array>
+</resources>

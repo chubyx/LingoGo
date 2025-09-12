@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.lingogo" />
+                  <option name="mobileSdkAppId" value="1:820060246747:android:0e576413163a5cf22ef2fe" />
+                  <option name="projectId" value="lingogo-app-573cb" />
+                  <option name="projectNumber" value="820060246747" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
