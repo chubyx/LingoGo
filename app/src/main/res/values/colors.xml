@@ -3,4 +3,24 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="naranja">#FF9800</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="orange_700">#FFA726</color> <!-- Tu naranja principal --><color name="orange_200">#FFCC80</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+
+
+    <color name="md_theme_light_primary">#FF6F00</color>
+    <color name="md_theme_light_onPrimary">#FFFFFF</color>
+    <color name="md_theme_light_primaryContainer">#FFDDB8</color>
+    <color name="md_theme_light_onPrimaryContainer">#311100</color>
+    <color name="md_theme_light_background">#FFFBFF</color>
+    <color name="md_theme_light_onBackground">#1C1B1F</color>
+    <color name="md_theme_light_surface">#FFFBFF</color>
+    <color name="md_theme_light_onSurface">#1C1B1F</color>
+    <color name="md_theme_light_surfaceVariant">#ECE1D9</color>
+    <color name="md_theme_light_onSurfaceVariant">#4D4640</color>
+    <color name="md_theme_light_outline">#7E766F</color>
+
 </resources>
