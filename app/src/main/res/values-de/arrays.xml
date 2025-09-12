@@ -1,0 +1,16 @@
+<resources>
+    <string-array name="idiomas">
+        <item>Spanisch</item>
+        <item>Englisch</item>
+        <item>Französisch</item>
+        <item>Deutsch</item>
+        <item>Portugiesisch</item>
+        <item>Japanisch</item>
+    </string-array>
+    <string-array name="generos">
+        <item>Keine Angabe</item>
+        <item>Männlich</item>
+        <item>Weiblich</item>
+        <item>Andere</item>
+    </string-array>
+</resources>

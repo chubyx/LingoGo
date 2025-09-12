@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@mipmap/fondo1"
->
+    tools:context=".InitionActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:padding="20dp"
         >
 
@@ -39,16 +39,22 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content">
 
+                    <!--  Texto extraído y ID agregado -->
                     <TextView
-                        android:text="Hola estudiante"
+                        android:id="@+id/tvBienvenidaHeader"
+                        android:text="@string/inicio_hola_estudiante"
+                        tools:text="Hola Estudiante"
                         android:textColor="#FFFFFF"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
 
+                    <!-- ¡CAMBIO! Texto extraído y ID agregado -->
                     <TextView
-                        android:text="Listo para aprender"
+                        android:id="@+id/tvSubtituloHeader"
+                        android:text="@string/inicio_listo_aprender"
+                        tools:text="Listo para aprender"
                         android:textColor="#FFF3E0"
                         android:textSize="14sp"
                         android:layout_width="wrap_content"
@@ -57,11 +63,14 @@
 
                 </LinearLayout>
 
+                <!--  Se agregó ID para la foto de perfil -->
                 <ImageView
+                    android:id="@+id/ivHeaderProfilePic"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:src="@android:drawable/ic_menu_compass"
-                     />
+                    app:tint="@color/white"
+                    android:contentDescription="Foto de perfil" />
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
@@ -73,7 +82,7 @@
             android:layout_height="wrap_content"
             app:cardElevation="6dp"
             app:cardBackgroundColor="#FFFFFF"
-            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
             app:layout_constraintTop_toBottomOf="@id/headerCard"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -96,10 +105,13 @@
                         android:layout_height="24dp"
                         android:src="@android:drawable/ic_menu_today"
                         android:layout_marginEnd="10dp"
-                        app:tint="@color/naranja" />
+                        app:tint="@color/naranja"
+                        android:contentDescription="Icono de progreso" />
 
+                    <!--  Texto extraído -->
                     <TextView
-                        android:text="Tu progreso hoy"
+                        android:text="@string/inicio_progreso_hoy"
+                        tools:text="Tu progreso hoy"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="@color/naranja"
@@ -124,8 +136,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
+                    <!--  Texto extraído -->
                     <TextView
-                        android:text="racha"
+                        android:text="@string/inicio_racha"
+                        tools:text="racha"
                         android:textSize="12sp"
                         android:textColor="#666666"
                         android:layout_width="wrap_content"
@@ -142,8 +156,10 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="20dp" />
 
+                    <!--  Texto extraído -->
                     <TextView
-                        android:text="Puntos"
+                        android:text="@string/inicio_puntos"
+                        tools:text="Puntos"
                         android:textSize="12sp"
                         android:textColor="#666666"
                         android:layout_width="wrap_content"
@@ -170,6 +186,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             app:layout_constraintTop_toBottomOf="@id/progressCard"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -199,24 +216,33 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content">
 
+                        <!--  Texto extraído y ID agregado -->
                         <TextView
-                            android:text="Continuar lección"
+                            android:id="@+id/tvLeccionTitulo"
+                            android:text="@string/inicio_continuar_leccion"
+                            tools:text="Continuar lección"
                             android:textColor="#FFFFFF"
                             android:textSize="18sp"
                             android:textStyle="bold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
 
+                        <!--  Texto extraído y ID agregado -->
                         <TextView
-                            android:text="Lección 5 presente simple"
+                            android:id="@+id/tvLeccionDetalle"
+                            android:text="@string/inicio_leccion_detalle"
+                            tools:text="Lección 5 presente simple"
                             android:textColor="#FFF3E0"
                             android:textSize="14sp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp" />
 
+                        <!--  Texto extraído y ID agregado -->
                         <TextView
-                            android:text="Progreso 75 completado"
+                            android:id="@+id/tvLeccionProgreso"
+                            android:text="@string/inicio_leccion_progreso"
+                            tools:text="Progreso 75 completado"
                             android:textColor="#FAD169"
                             android:textSize="12sp"
                             android:textStyle="bold"
@@ -231,7 +257,7 @@
                         android:layout_height="60dp"
                         android:src="@android:drawable/ic_media_play"
                         android:padding="15dp"
-
+                        app:tint="@color/white"
                         android:contentDescription="play_lesson" />
 
                 </LinearLayout>
@@ -268,10 +294,14 @@
                             android:layout_height="40dp"
                             android:src="@android:drawable/ic_menu_info_details"
                             android:layout_marginBottom="10dp"
-                            app:tint="@color/naranja" />
+                            app:tint="@color/naranja"
+                            android:contentDescription="Icono de progreso" />
 
+                        <!--  Texto extraído y ID agregado -->
                         <TextView
-                            android:text="Mi progreso"
+                            android:id="@+id/tvProgresoLabel"
+                            android:text="@string/inicio_mi_progreso"
+                            tools:text="Mi progreso"
                             android:textColor="@color/naranja"
                             android:textSize="14sp"
                             android:textStyle="bold"
@@ -306,10 +336,14 @@
                             android:layout_height="40dp"
                             android:src="@android:drawable/ic_menu_edit"
                             android:layout_marginBottom="10dp"
-                            app:tint="@color/naranja" />
+                            app:tint="@color/naranja"
+                            android:contentDescription="Icono de perfil" />
 
+                        <!--  Texto extraído y ID agregado -->
                         <TextView
-                            android:text="Perfil"
+                            android:id="@+id/tvPerfilLabel"
+                            android:text="@string/inicio_perfil"
+                            tools:text="Perfil"
                             android:textColor="@color/naranja"
                             android:textSize="14sp"
                             android:textStyle="bold"
@@ -355,10 +389,14 @@
                             android:layout_height="30dp"
                             android:src="@android:drawable/ic_menu_search"
                             android:layout_marginBottom="8dp"
-                            app:tint="@color/naranja" />
+                            app:tint="@color/naranja"
+                            android:contentDescription="Icono de comunidad" />
 
+                        <!--  Texto extraído y ID agregado -->
                         <TextView
-                            android:text="Comunidad"
+                            android:id="@+id/tvComunidadLabel"
+                            android:text="@string/inicio_comunidad"
+                            tools:text="Comunidad"
                             android:textColor="@color/naranja"
                             android:textSize="12sp"
                             android:textStyle="bold"
@@ -394,10 +432,14 @@
                             android:layout_height="30dp"
                             android:src="@android:drawable/ic_menu_myplaces"
                             android:layout_marginBottom="8dp"
-                            app:tint="@color/naranja" />
+                            app:tint="@color/naranja"
+                            android:contentDescription="Icono de juegos" />
 
+                        <!--  Texto extraído y ID agregado -->
                         <TextView
-                            android:text="Juegos"
+                            android:id="@+id/tvJuegosLabel"
+                            android:text="@string/inicio_juegos"
+                            tools:text="Juegos"
                             android:textColor="@color/naranja"
                             android:textSize="12sp"
                             android:textStyle="bold"
@@ -432,10 +474,14 @@
                             android:layout_height="30dp"
                             android:src="@android:drawable/ic_menu_preferences"
                             android:layout_marginBottom="8dp"
-                            app:tint="@color/naranja" />
+                            app:tint="@color/naranja"
+                            android:contentDescription="Icono de ajustes" />
 
+                        <!--  Texto extraído, ID agregado y 'androids'  -->
                         <TextView
-                            android:text="Ajustes"
+                            android:id="@+id/tvAjustesLabel"
+                            android:text="@string/inicio_ajustes"
+                            tools:text="Ajustes"
                             android:textColor="@color/naranja"
                             android:textSize="12sp"
                             android:textStyle="bold"
@@ -469,15 +515,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <!--  Texto extraído y ID agregado -->
                 <TextView
-                    android:text="💡"
+                    android:id="@+id/tvTipEmoji"
+                    tools:text="💡"
                     android:textSize="24sp"
                     android:layout_marginEnd="15dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
+                <!--  Texto extraído y ID agregado -->
                 <TextView
-                    android:text="Tip del dia practica 5 minutos"
+                    android:id="@+id/tvTipDelDia"
+                    android:text="@string/inicio_tip_del_dia"
+                    tools:text="Tip del dia practica 5 minutos"
                     android:textColor="@color/naranja"
                     android:textSize="14sp"
                     android:textStyle="bold"
@@ -486,6 +537,7 @@
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

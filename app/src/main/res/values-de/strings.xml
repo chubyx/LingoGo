@@ -1,0 +1,82 @@
+<resources>
+    <string name="app_name">LingoGo</string>
+    <string name="lingogo">LingoGo</string>
+
+    <string name="tu_profesor_de_ingles_de_bolsillo">Dein Englischlehrer für die Hosentasche</string>
+    <string name="correo_electr_nico">E-Mail</string>
+    <string name="contrase_a">Passwort</string>
+    <string name="iniciar_sesi_n">Anmelden</string>
+    <string name="no_tienes_cuenta_reg_strate_aqu">Kein Konto? Hier registrieren</string>
+    <string name="cerrar_sesi_n">Abmelden</string>
+
+    <string name="inicio_hola_estudiante">Hallo, Lernender!</string>
+    <string name="inicio_bienvenida_usuario">Willkommen, %1$s!</string>
+    <string name="inicio_listo_aprender">Bereit zu lernen?</string>
+    <string name="inicio_progreso_hoy">Dein heutiger Fortschritt</string>
+    <string name="inicio_racha">Serie</string>
+    <string name="inicio_puntos">Punkte</string>
+    <string name="inicio_continuar_leccion">Lektion fortsetzen</string>
+    <string name="inicio_leccion_detalle">Lektion 5: Präsens</string>
+    <string name="inicio_leccion_progreso">Fortschritt: 75% abgeschlossen</string>
+    <string name="inicio_mi_progreso">Mein Fortschritt</string>
+    <string name="inicio_perfil">Profil</string>
+    <string name="inicio_favoritas">Favoriten</string>
+    <string name="inicio_comunidad">Community</string>
+    <string name="inicio_juegos">Spiele</string>
+    <string name="inicio_ajustes">Einstellungen</string>
+    <string name="inicio_tip_del_dia">Tipp des Tages: 5 Minuten üben!</string>
+
+    <string name="configuraci_n">⚙️ Einstellungen</string>
+    <string name="config_categoria_general">Allgemein</string>
+    <string name="idioma_de_la_aplicaci_n">Sprache der Anwendung</string>
+    <string name="config_idioma_subtitulo">Wählen Sie Ihre bevorzugte Sprache</string>
+    <string name="config_categoria_apariencia">Aussehen &amp; Ton</string>
+    <string name="notificaciones">Benachrichtigungen</string>
+    <string name="activar_notificaciones">Benachrichtigungen aktivieren</string>
+    <string name="tema">Thema</string>
+    <string name="claro">Hell</string>
+    <string name="oscuro">Dunkel</string>
+
+    <string name="favoritas_titulo">Meine Lieblingswörter</string>
+    <string name="favoritas_no_hay">Du hast noch keine Lieblingswörter</string>
+    <string name="favoritas_borrar">Wort löschen</string>
+
+    <string name="minijuegos">Minispiele</string>
+    <string name="progreso_diario">Täglicher Fortschritt</string>
+    <string name="game_conecta_palabras">Wörter verbinden</string>
+    <string name="game_escucha_repite">Hören &amp; Wiederholen</string>
+    <string name="game_quiz_gramatica">Grammatik-Quiz</string>
+    <string name="game_crea_historias">Geschichten erstellen</string>
+    <string name="game_memoria_visual">Memory-Spiel</string>
+    <string name="game_desafio_pronunciacion">Aussprache-Herausforderung</string>
+    <string name="logros">Erfolge</string>
+    <string name="game_desafio_diario">Tägliche Herausforderung starten</string>
+    <string name="inicio_escribe_palabra_hint">Ein Wort eingeben</string>
+    <string name="inicio_guardar">Speichern</string>
+    <string name="registro_titulo">Benutzerregistrierung</string>
+    <string name="registro_nombre_completo">Vollständiger Name</string>
+    <string name="registro_nombre_usuario">Benutzername</string>
+    <string name="registro_telefono">Telefonnummer</string>
+    <string name="registro_fecha_nacimiento">Geburtsdatum (TT/MM/JJJJ)</string>
+    <string name="registro_direccion">Adresse</string>
+    <string name="registro_genero">Geschlecht</string>
+    <string name="registro_contrasena">Passwort</string>
+    <string name="registro_confirmar_contrasena">Passwort bestätigen</string>
+    <string name="registro_boton_registrar">Registrieren</string>
+    <string name="registro_ir_a_login">Haben Sie bereits ein Konto? Anmelden</string>
+    <string name="registro_error_obligatorios">Name, Benutzername, E-Mail und Passwort sind erforderlich</string>
+    <string name="registro_error_contrasena_corta">Das Passwort muss mindestens 6 Zeichen lang sein</string>
+    <string name="registro_error_contrasenas_no_coinciden">Die Passwörter stimmen nicht überein</string>
+    <string name="registro_error_id">Fehler beim Abrufen der Benutzer-ID.</string>
+    <string name="registro_exito">Konto erstellt und Daten gespeichert.</string>
+    <string name="registro_error_firestore">Fehler beim Speichern der Daten: %1$s</string>
+    <string name="registro_error_auth">Registrierung fehlgeschlagen: %1$s</string>
+    <string name="language_picker_title">Sprache auswählen</string>
+    <string-array name="idiomas_tags">
+        <item>#Spanisch</item>
+        <item>#Englisch</item>
+        <item>#Französisch</item>
+        <item>#Deutsch</item>
+        <item>#Italienisch</item>
+    </string-array>
+</resources>
