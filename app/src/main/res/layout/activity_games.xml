@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@mipmap/fondo2">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FFF3E0">
+        >
 
         <LinearLayout
             android:orientation="vertical"
@@ -31,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="30dp"
                 android:text="minijuegos"
-                android:textColor="#FAD169"
+                android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -46,7 +48,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="progreso_diario"
+                    android:text="progreso diario"
                     android:textColor="@color/naranja"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -113,7 +115,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="conecta_palabras"
+                                android:text="Conecta palabras"
                                 android:textColor="@color/naranja"
                                 android:textSize="12sp"
                                 android:textStyle="bold"
@@ -159,7 +161,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="escucha_y_repite"
+                                android:text="Escucha y repite"
                                 android:textColor="#0277BD"
                                 android:textSize="12sp"
                                 android:textStyle="bold"
@@ -214,7 +216,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="quiz_gramatica"
+                                android:text="Quiz gramatica"
                                 android:textColor="#7B1FA2"
                                 android:textSize="12sp"
                                 android:textStyle="bold"
@@ -260,7 +262,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="crea_historias"
+                                android:text="Crea historias"
                                 android:textColor="#2E7D32"
                                 android:textSize="12sp"
                                 android:textStyle="bold"
@@ -315,7 +317,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="memoria_visual"
+                                android:text="Memoria visual"
                                 android:textColor="#F57C00"
                                 android:textSize="12sp"
                                 android:textStyle="bold"
@@ -361,7 +363,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="desafio_pronunciacion"
+                                android:text="Desafío pronunciación"
                                 android:textColor="#C62828"
                                 android:textSize="12sp"
                                 android:textStyle="bold"
@@ -470,7 +472,7 @@
             <!-- Action Button -->
             <Button
                 android:id="@+id/btnStartDaily"
-                android:text="comenzar_desafio_diario"
+                android:text="Comenzar desafío diario"
                 android:backgroundTint="@color/naranja"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold"

@@ -2,13 +2,13 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+             android:layout_height="match_parent">
 
     <LinearLayout
         android:orientation="vertical"
         android:gravity="center"
         android:padding="30dp"
-        android:background="#FFF3E0"
+        android:background="@mipmap/fondo3"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -25,9 +25,10 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="40dp"
             android:text="@string/tu_profesor_de_ingles_de_bolsillo"
-            android:textColor="#FAD169"
+            android:textColor="@color/white"
             android:textSize="12sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            />
 
         <EditText
             android:id="@+id/inputEmail"
@@ -62,6 +63,7 @@
             android:layout_height="wrap_content"/>
 
         <TextView
+            android:id="@+id/tvIrRegistro"
             android:text="@string/no_tienes_cuenta_reg_strate_aqu"
             android:textSize="14sp"
             android:layout_marginTop="20dp"

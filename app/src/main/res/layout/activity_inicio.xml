@@ -4,12 +4,15 @@
 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFF3E0">
+    android:background="@mipmap/fondo1"
+>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="20dp">
+        android:layout_height="match_parent"
+        android:padding="20dp"
+        >
+
 
         <!-- Header  saludo personalizado -->
         <androidx.cardview.widget.CardView
@@ -37,7 +40,7 @@
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:text="hola_estudiante"
+                        android:text="Hola estudiante"
                         android:textColor="#FFFFFF"
                         android:textSize="18sp"
                         android:textStyle="bold"
@@ -45,7 +48,7 @@
                         android:layout_height="wrap_content" />
 
                     <TextView
-                        android:text="listo_para_aprender"
+                        android:text="Listo para aprender"
                         android:textColor="#FFF3E0"
                         android:textSize="14sp"
                         android:layout_width="wrap_content"
@@ -96,7 +99,7 @@
                         app:tint="@color/naranja" />
 
                     <TextView
-                        android:text="tu_progreso_hoy"
+                        android:text="Tu progreso hoy"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="@color/naranja"
@@ -197,7 +200,7 @@
                         android:layout_height="wrap_content">
 
                         <TextView
-                            android:text="continuar_leccion"
+                            android:text="Continuar lección"
                             android:textColor="#FFFFFF"
                             android:textSize="18sp"
                             android:textStyle="bold"
@@ -205,7 +208,7 @@
                             android:layout_height="wrap_content" />
 
                         <TextView
-                            android:text="leccion_5_presente_simple"
+                            android:text="Lección 5 presente simple"
                             android:textColor="#FFF3E0"
                             android:textSize="14sp"
                             android:layout_width="wrap_content"
@@ -213,7 +216,7 @@
                             android:layout_marginTop="5dp" />
 
                         <TextView
-                            android:text="progreso_75_completado"
+                            android:text="Progreso 75 completado"
                             android:textColor="#FAD169"
                             android:textSize="12sp"
                             android:textStyle="bold"
@@ -268,7 +271,7 @@
                             app:tint="@color/naranja" />
 
                         <TextView
-                            android:text="mi_progreso"
+                            android:text="Mi progreso"
                             android:textColor="@color/naranja"
                             android:textSize="14sp"
                             android:textStyle="bold"
@@ -280,7 +283,7 @@
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/cardPracticar"
+                    android:id="@+id/cardPerfil"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="120dp"
@@ -306,7 +309,7 @@
                             app:tint="@color/naranja" />
 
                         <TextView
-                            android:text="practicar"
+                            android:text="Perfil"
                             android:textColor="@color/naranja"
                             android:textSize="14sp"
                             android:textStyle="bold"
@@ -394,7 +397,7 @@
                             app:tint="@color/naranja" />
 
                         <TextView
-                            android:text="juegos"
+                            android:text="Juegos"
                             android:textColor="@color/naranja"
                             android:textSize="12sp"
                             android:textStyle="bold"
@@ -432,7 +435,7 @@
                             app:tint="@color/naranja" />
 
                         <TextView
-                            android:text="ajustes"
+                            android:text="Ajustes"
                             android:textColor="@color/naranja"
                             android:textSize="12sp"
                             android:textStyle="bold"
@@ -474,7 +477,7 @@
                     android:layout_height="wrap_content" />
 
                 <TextView
-                    android:text="tip_del_dia_practica_5_minutos"
+                    android:text="Tip del dia practica 5 minutos"
                     android:textColor="@color/naranja"
                     android:textSize="14sp"
                     android:textStyle="bold"
