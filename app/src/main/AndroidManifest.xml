@@ -33,6 +33,12 @@
         <activity android:name=".PerfilActivity"/>
         <activity android:name=".RegistroActivity"/>
         <activity android:name=".PalabrasFavoritasActivity"/>
+        <activity
+            android:name=".ListaLeccionesActivity"
+            android:parentActivityName=".InitionActivity"/>
+        <activity
+            android:name=".QuizActivity"
+            android:parentActivityName=".ListaLeccionesActivity"/>
 
         <activity android:name="com.lingogo.games.PronunciationChallengeActivity"
             android:exported="false"/>

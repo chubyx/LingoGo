@@ -15,8 +15,10 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.lifecycleScope
 import com.example.lingogo.database.AppDatabase
+import com.example.lingogo.ListaLeccionesActivity
 import com.example.lingogo.database.FavoriteWord
 import com.example.lingogo.database.SettingsDataStore
+import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.first
@@ -80,6 +82,19 @@ class InitionActivity : AppCompatActivity() {
         etPalabraTemp = findViewById(R.id.etPalabraFavoritaTemp)
         btnGuardarTemp = findViewById(R.id.btnGuardarPalabraTemp)
 
+        // --- NAVEGACIÓN A LECCIONES ---
+        try {
+            val continueLessonCard: com.google.android.material.card.MaterialCardView = findViewById(R.id.cardEmpezarLeccion)
+            continueLessonCard.setOnClickListener {
+                val intent = Intent(this, ListaLeccionesActivity::class.java)
+                startActivity(intent)
+            }
+        } catch (e: Exception) {
+            // Manejar el error si no se encuentra la vista, por si acaso
+            e.printStackTrace()
+        }
+        // --- FIN DE NAVEGACIÓN ---
+
         // Listeners de tus CardViews
         cardViewComunidad!!.setOnClickListener(View.OnClickListener {
             startActivity(Intent(this@InitionActivity, CommunityActivity::class.java))
@@ -100,6 +115,7 @@ class InitionActivity : AppCompatActivity() {
         cardPalabrasFavoritas!!.setOnClickListener(View.OnClickListener {
             startActivity(Intent(this@InitionActivity, PalabrasFavoritasActivity::class.java))
         })
+
 
         // Listener del Botón Guardar
         btnGuardarTemp.setOnClickListener {

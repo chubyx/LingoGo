@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="?attr/colorSurfaceContainer"
+    tools:context=".QuizActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbarQuiz"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            tools:title="Lección 1: Verbo 'to be'" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Contenido del Quiz -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Progreso (Etapa 1 / 3) -->
+            <TextView
+                android:id="@+id/textViewStageTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAppearance="?attr/textAppearanceTitleLarge"
+                android:textColor="?attr/colorPrimary"
+                android:layout_marginBottom="16dp"
+                tools:text="Etapa 1 / 3" />
+
+            <!-- Texto de la Pregunta -->
+            <TextView
+                android:id="@+id/textViewQuestion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="100dp"
+                android:gravity="center"
+                android:background="@drawable/question_background"
+                android:padding="16dp"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                android:layout_marginBottom="24dp"
+                tools:text="¿Cuál es la forma correcta?\n'She ___ a doctor.'"/>
+
+            <!-- Contenedor de Opciones (GridLayout) -->
+            <GridLayout
+                android:id="@+id/gridOptions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:rowCount="2"
+                android:useDefaultMargins="true">
+
+                <!-- Las opciones se agregarán aquí dinámicamente o puedes
+                     definir 4 botones y solo cambiarles el texto -->
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonOption1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_rowWeight="1"
+                    android:layout_gravity="fill"
+                    android:minHeight="80dp"
+                    android:layout_margin="8dp"
+                    app:cornerRadius="16dp"
+                    tools:text="Option A"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonOption2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_rowWeight="1"
+                    android:layout_gravity="fill"
+                    android:minHeight="80dp"
+                    android:layout_margin="8dp"
+                    app:cornerRadius="16dp"
+                    tools:text="Option B"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonOption3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_rowWeight="1"
+                    android:layout_gravity="fill"
+                    android:minHeight="80dp"
+                    android:layout_margin="8dp"
+                    app:cornerRadius="16dp"
+                    tools:text="Option C"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonOption4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_rowWeight="1"
+                    android:layout_gravity="fill"
+                    android:minHeight="80dp"
+                    android:layout_margin="8dp"
+                    app:cornerRadius="16dp"
+                    tools:text="Option D"/>
+
+            </GridLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
