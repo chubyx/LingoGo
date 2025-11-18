@@ -22,6 +22,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.ListenerRegistration
 
 class CommunityActivity : AppCompatActivity() {
 
@@ -54,6 +55,14 @@ class CommunityActivity : AppCompatActivity() {
     private lateinit var groupAdapter: GroupAdapter
     private val groupList = mutableListOf<Group>()
 
+    // Listeners de Firestore
+    private var postsListener: ListenerRegistration? = null
+    private var groupsListener: ListenerRegistration? = null
+    private var chatRoomsListener: ListenerRegistration? = null
+
+    // --- ¡NUEVO! Variable para recordar la pestaña ---
+    // (Por defecto, empezamos en el Foro)
+    private var currentTabId: Int = R.id.btnTabForo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -129,21 +138,25 @@ class CommunityActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        // Es importante verificar el usuario aquí,
-        // ya que esta pantalla depende de quién esté logueado.
         val currentUser = auth.currentUser
         if (currentUser == null) {
             irALogin()
         } else {
             currentUserId = currentUser.uid
 
-            // Configurar AMBOS RecyclerViews
             setupPostRecyclerView()
             setupChatRoomRecyclerView()
-            setupGroupRecyclerView() // ¡NUEVO!
+            setupGroupRecyclerView()
 
-            // Cargar los datos del Foro (la pestaña por defecto)
-            mostrarPestañaForo()
+            // --- ¡CAMBIO CLAVE! ---
+            // Restaurar la pestaña que estaba activa en lugar de
+            // llamar siempre a mostrarPestañaForo()
+            when (currentTabId) {
+                R.id.btnTabChats -> mostrarPestañaChats()
+                R.id.btnTabGrupos -> mostrarPestañaGrupos()
+                else -> mostrarPestañaForo() // 'else' incluye R.id.btnTabForo (por defecto)
+            }
+            // --- FIN DEL CAMBIO ---
         }
     }
 
@@ -225,32 +238,32 @@ class CommunityActivity : AppCompatActivity() {
         }
     }
 
+
     // --- ¡FUNCIÓN MODIFICADA! ---
     private fun mostrarPestañaForo() {
         Log.d(TAG, "Mostrando pestaña Foro")
-        rvChatRooms.visibility = View.GONE // Ocultar chats
-        rvGroupRooms.visibility = View.GONE // Ocultar grupos
-        rvPosts.visibility = View.VISIBLE // Mostrar posts
-        fabCrearPost.visibility = View.VISIBLE // Mostrar botón de crear POST
+        rvChatRooms.visibility = View.GONE
+        rvGroupRooms.visibility = View.GONE
+        rvPosts.visibility = View.VISIBLE
+        fabCrearPost.visibility = View.VISIBLE
 
-        // --- ¡NUEVO! Cambiar colores de pestañas ---
-        // (Color #FAD169 parseado)
+        chatRoomsListener?.remove()
+        groupsListener?.remove()
+
+        // --- ¡NUEVO! Guardamos la pestaña actual ---
+        currentTabId = R.id.btnTabForo
+
+        // (Lógica de colores sin cambios)
         val colorClaro = ColorStateList.valueOf(Color.parseColor("#FAD169"))
         val colorNaranja = ContextCompat.getColorStateList(this, R.color.naranja)
         val colorTextoNaranja = ContextCompat.getColor(this, R.color.naranja)
 
-        // Pestaña Foro (Seleccionada)
         btnTabForo.backgroundTintList = colorNaranja
         btnTabForo.setTextColor(Color.WHITE)
-
-        // Pestaña Chats (No seleccionada)
         btnTabChats.backgroundTintList = colorClaro
         btnTabChats.setTextColor(colorTextoNaranja)
-
-        // Pestaña Grupos (No seleccionada)
         btnTabGrupos.backgroundTintList = colorClaro
         btnTabGrupos.setTextColor(colorTextoNaranja)
-        // --- FIN DEL CAMBIO ---
 
         cargarPostsForo()
     }
@@ -258,28 +271,28 @@ class CommunityActivity : AppCompatActivity() {
     // --- ¡FUNCIÓN MODIFICADA! ---
     private fun mostrarPestañaChats() {
         Log.d(TAG, "Mostrando pestaña Chats")
-        rvPosts.visibility = View.GONE // Ocultar posts
-        rvGroupRooms.visibility = View.GONE // Ocultar grupos
-        rvChatRooms.visibility = View.VISIBLE // Mostrar chats
-        fabCrearPost.visibility = View.GONE // Ocultar botón de crear post
+        rvPosts.visibility = View.GONE
+        rvGroupRooms.visibility = View.GONE
+        rvChatRooms.visibility = View.VISIBLE
+        fabCrearPost.visibility = View.GONE
 
-        // --- ¡NUEVO! Cambiar colores de pestañas ---
+        postsListener?.remove()
+        groupsListener?.remove()
+
+        // --- ¡NUEVO! Guardamos la pestaña actual ---
+        currentTabId = R.id.btnTabChats
+
+        // (Lógica de colores sin cambios)
         val colorClaro = ColorStateList.valueOf(Color.parseColor("#FAD169"))
         val colorNaranja = ContextCompat.getColorStateList(this, R.color.naranja)
         val colorTextoNaranja = ContextCompat.getColor(this, R.color.naranja)
 
-        // Pestaña Chats (Seleccionada)
         btnTabChats.backgroundTintList = colorNaranja
         btnTabChats.setTextColor(Color.WHITE)
-
-        // Pestaña Foro (No seleccionada)
         btnTabForo.backgroundTintList = colorClaro
         btnTabForo.setTextColor(colorTextoNaranja)
-
-        // Pestaña Grupos (No seleccionada)
         btnTabGrupos.backgroundTintList = colorClaro
         btnTabGrupos.setTextColor(colorTextoNaranja)
-        // --- FIN DEL CAMBIO ---
 
         cargarChatRooms()
     }
@@ -287,28 +300,28 @@ class CommunityActivity : AppCompatActivity() {
     // --- ¡FUNCIÓN MODIFICADA! ---
     private fun mostrarPestañaGrupos() {
         Log.d(TAG, "Mostrando pestaña Grupos")
-        rvPosts.visibility = View.GONE // Ocultar posts
-        rvChatRooms.visibility = View.GONE // Ocultar chats
-        rvGroupRooms.visibility = View.VISIBLE // Mostrar grupos
-        fabCrearPost.visibility = View.GONE // Ocultar botón de crear post
+        rvPosts.visibility = View.GONE
+        rvChatRooms.visibility = View.GONE
+        rvGroupRooms.visibility = View.VISIBLE
+        fabCrearPost.visibility = View.GONE
 
-        // --- ¡NUEVO! Cambiar colores de pestañas ---
+        postsListener?.remove()
+        chatRoomsListener?.remove()
+
+        // --- ¡NUEVO! Guardamos la pestaña actual ---
+        currentTabId = R.id.btnTabGrupos
+
+        // (Lógica de colores sin cambios)
         val colorClaro = ColorStateList.valueOf(Color.parseColor("#FAD169"))
         val colorNaranja = ContextCompat.getColorStateList(this, R.color.naranja)
         val colorTextoNaranja = ContextCompat.getColor(this, R.color.naranja)
 
-        // Pestaña Grupos (Seleccionada)
         btnTabGrupos.backgroundTintList = colorNaranja
         btnTabGrupos.setTextColor(Color.WHITE)
-
-        // Pestaña Foro (No seleccionada)
         btnTabForo.backgroundTintList = colorClaro
         btnTabForo.setTextColor(colorTextoNaranja)
-
-        // Pestaña Chats (No seleccionada)
         btnTabChats.backgroundTintList = colorClaro
         btnTabChats.setTextColor(colorTextoNaranja)
-        // --- FIN DEL CAMBIO ---
 
         cargarGrupos()
     }
@@ -419,6 +432,8 @@ class CommunityActivity : AppCompatActivity() {
                 Toast.makeText(this, "Error al cargar chats", Toast.LENGTH_SHORT).show()
             }
     }
+
+
 
     private fun irALogin() {
         val intent = Intent(this, MainActivity::class.java)

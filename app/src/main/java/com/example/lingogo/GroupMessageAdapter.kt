@@ -3,6 +3,7 @@ package com.example.lingogo
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
@@ -10,12 +11,13 @@ import java.util.Locale
 
 /**
  * Adaptador para los mensajes de GRUPO.
- * Es casi idéntico a MessageAdapter, pero usa
- * item_group_message_received.xml para mostrar el nombre del autor.
  */
 class GroupMessageAdapter(
     private val messageList: List<GroupMessage>,
-    private val currentUserId: String
+    private val currentUserId: String,
+    // --- ¡NUEVO! ---
+    private val groupCreatorId: String, // ID del creador del grupo (Admin)
+    private val onDeleteClick: (GroupMessage) -> Unit // Lambda de borrado
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val dateFormatter = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -30,6 +32,7 @@ class GroupMessageAdapter(
     class SentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val messageText: TextView = itemView.findViewById(R.id.tvMessageText)
         val messageTime: TextView = itemView.findViewById(R.id.tvMessageTime)
+        val deleteButton: ImageView = itemView.findViewById(R.id.ivDeleteMessage)
     }
 
     // ViewHolder para mensajes RECIBIDOS (¡con nombre de autor!)
@@ -37,17 +40,18 @@ class GroupMessageAdapter(
         val authorName: TextView = itemView.findViewById(R.id.tvMessageAuthor)
         val messageText: TextView = itemView.findViewById(R.id.tvMessageText)
         val messageTime: TextView = itemView.findViewById(R.id.tvMessageTime)
+        val deleteButton: ImageView = itemView.findViewById(R.id.ivDeleteMessage)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
 
         return if (viewType == VIEW_TYPE_SENT) {
-            // Reutilizamos el layout de chat 1-a-1
+            // Infla el layout de ENVIADO
             val view = layoutInflater.inflate(R.layout.item_message_sent, parent, false)
             SentViewHolder(view)
         } else {
-            // Usamos el NUEVO layout para grupos
+            // Infla el layout de RECIBIDO (el de grupo)
             val view = layoutInflater.inflate(R.layout.item_group_message_received, parent, false)
             ReceivedViewHolder(view)
         }
@@ -70,7 +74,7 @@ class GroupMessageAdapter(
         val message = messageList[position]
 
         if (holder.itemViewType == VIEW_TYPE_SENT) {
-            // Es un ViewHolder de tipo ENVIADO
+            // --- Lógica para ViewHolder ENVIADO ---
             val sentHolder = holder as SentViewHolder
             sentHolder.messageText.text = message.text
             if (message.timestamp != null) {
@@ -78,8 +82,15 @@ class GroupMessageAdapter(
             } else {
                 sentHolder.messageTime.text = "..."
             }
+
+            // ¡NUEVO! Siempre mostramos el botón de borrar (es nuestro mensaje)
+            sentHolder.deleteButton.visibility = View.VISIBLE
+            sentHolder.deleteButton.setOnClickListener {
+                onDeleteClick(message)
+            }
+
         } else {
-            // Es un ViewHolder de tipo RECIBIDO
+            // --- Lógica para ViewHolder RECIBIDO ---
             val receivedHolder = holder as ReceivedViewHolder
             receivedHolder.authorName.text = message.senderName // ¡Mostramos el nombre!
             receivedHolder.messageText.text = message.text
@@ -87,6 +98,17 @@ class GroupMessageAdapter(
                 receivedHolder.messageTime.text = dateFormatter.format(message.timestamp)
             } else {
                 receivedHolder.messageTime.text = "..."
+            }
+
+            // --- ¡NUEVO! Lógica de Borrado de Admin ---
+            // Solo mostramos el botón de borrar si somos el CREADOR del grupo
+            if (currentUserId == groupCreatorId) {
+                receivedHolder.deleteButton.visibility = View.VISIBLE
+                receivedHolder.deleteButton.setOnClickListener {
+                    onDeleteClick(message)
+                }
+            } else {
+                receivedHolder.deleteButton.visibility = View.GONE
             }
         }
     }

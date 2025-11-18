@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Layout para mensajes RECIBIDOS en un GRUPO -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingVertical="4dp"
@@ -20,7 +22,7 @@
             android:id="@+id/tvMessageAuthor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nombre Autor"
+            tools:text="Nombre Autor"
             android:textColor="@color/naranja"
             android:textSize="12sp"
             android:textStyle="bold"
@@ -32,17 +34,37 @@
             android:layout_height="wrap_content"
             android:textColor="@android:color/black"
             android:textSize="16sp"
-            android:text="Este es un mensaje recibido." />
+            tools:text="Este es un mensaje recibido." />
 
-        <TextView
-            android:id="@+id/tvMessageTime"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:layout_gravity="end"
-            android:text="12:01"
-            android:textColor="#80000000"
-            android:textSize="10sp"
-            android:layout_marginTop="4dp"/>
+            android:gravity="center_vertical"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/tvMessageTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="12:01"
+                android:textColor="#80000000"
+                android:textSize="10sp"
+                android:layout_marginEnd="8dp"/>
+
+            <!-- ¡NUEVO! Botón de Borrar (solo visible para el ADMIN) -->
+            <ImageView
+                android:id="@+id/ivDeleteMessage"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                app:tint="#AAAAAA"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:contentDescription="Borrar mensaje" />
+
+        </LinearLayout>
     </LinearLayout>
 
 </RelativeLayout>

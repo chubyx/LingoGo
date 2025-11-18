@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- CoordinatorLayout permite que el FAB se oculte al hacer scroll (en el futuro) -->
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -18,7 +19,7 @@
             android:id="@+id/toolbarCommunity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/orange_700"
+            android:background="@color/naranja"
             app:title="Comunidad LingoGo"
             app:titleTextColor="@color/white" />
 
@@ -27,42 +28,41 @@
             android:id="@+id/tabsLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#FFF8E1"
             android:orientation="horizontal"
-
-            android:padding="15dp">
+            android:padding="15dp"
+            android:background="#FFFFFF">
 
             <Button
                 android:id="@+id/btnTabChats"
                 android:layout_width="0dp"
                 android:layout_height="45dp"
-                android:layout_marginEnd="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="#FAD169"
+                android:layout_marginEnd="5dp"
                 android:text="Chats"
                 android:textColor="@color/naranja"
+                android:backgroundTint="#FAD169"
                 android:textSize="14sp" />
 
             <Button
                 android:id="@+id/btnTabGrupos"
                 android:layout_width="0dp"
                 android:layout_height="45dp"
-                android:layout_marginHorizontal="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="#FAD169"
+                android:layout_marginHorizontal="5dp"
                 android:text="Grupos"
                 android:textColor="@color/naranja"
+                android:backgroundTint="#FAD169"
                 android:textSize="14sp" />
 
             <Button
                 android:id="@+id/btnTabForo"
                 android:layout_width="0dp"
                 android:layout_height="45dp"
-                android:layout_marginStart="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/naranja"
+                android:layout_marginStart="5dp"
                 android:text="Foro"
                 android:textColor="#FFFFFF"
+                android:backgroundTint="@color/naranja"
                 android:textSize="14sp" />
 
         </LinearLayout>
@@ -84,7 +84,7 @@
             android:layout_height="match_parent"
             android:padding="8dp"
             android:visibility="gone"
-            tools:listitem="@layout/item_post" />
+        tools:listitem="@layout/item_post" />
 
         <!-- Lista de Salas de Chat (Chats) -->
         <androidx.recyclerview.widget.RecyclerView
@@ -93,7 +93,7 @@
             android:layout_height="match_parent"
             android:padding="8dp"
             android:visibility="gone"
-            tools:listitem="@layout/item_chat_room" />
+        tools:listitem="@layout/item_chat_room" />
 
         <!-- ¡NUEVO! Lista de Salas de Grupo (Grupos) -->
         <androidx.recyclerview.widget.RecyclerView
@@ -114,10 +114,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:contentDescription="Crear nuevo post"
         android:src="@android:drawable/ic_menu_edit"
-        android:visibility="gone"
         app:backgroundTint="@color/naranja"
-        app:tint="@color/white" />
+        app:tint="@color/white"
+        android:visibility="gone"
+        android:contentDescription="Crear nuevo post" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

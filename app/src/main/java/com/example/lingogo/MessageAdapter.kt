@@ -3,6 +3,7 @@ package com.example.lingogo
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
@@ -15,7 +16,9 @@ import java.util.Locale
  */
 class MessageAdapter(
     private val messageList: List<Message>,
-    private val currentUserId: String
+    private val currentUserId: String,
+    // --- ¡NUEVO! ---
+    private val onDeleteClick: (Message) -> Unit
 ) : RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
 
     private val dateFormatter = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -34,6 +37,9 @@ class MessageAdapter(
     class MessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val messageText: TextView = itemView.findViewById(R.id.tvMessageText)
         val messageTime: TextView = itemView.findViewById(R.id.tvMessageTime)
+        // --- ¡NUEVO! ---
+        // (El layout recibido no tiene este botón, así que puede ser nulo)
+        val deleteButton: ImageView? = itemView.findViewById(R.id.ivDeleteMessage)
     }
 
     /**
@@ -83,6 +89,18 @@ class MessageAdapter(
             holder.messageTime.text = dateFormatter.format(message.timestamp)
         } else {
             holder.messageTime.text = "..."
+        }
+
+        // --- ¡NUEVO! Lógica de Borrado ---
+        // Solo mostramos el botón de borrar si es un mensaje ENVIADO
+        if (holder.itemViewType == VIEW_TYPE_SENT) {
+            holder.deleteButton?.visibility = View.VISIBLE
+            holder.deleteButton?.setOnClickListener {
+                onDeleteClick(message)
+            }
+        } else {
+            // (El layout recibido no tiene botón, pero lo ocultamos por si acaso)
+            holder.deleteButton?.visibility = View.GONE
         }
     }
 }

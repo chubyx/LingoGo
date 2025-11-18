@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Layout para MIS mensajes (derecha) -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingVertical="4dp"
@@ -21,17 +23,37 @@
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
             android:textSize="16sp"
-            android:text="Este es un mensaje enviado por mí." />
+            tools:text="Este es un mensaje enviado por mí." />
 
-        <TextView
-            android:id="@+id/tvMessageTime"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:layout_gravity="end"
-            android:text="12:00"
-            android:textColor="#CCFFFFFF"
-            android:textSize="10sp"
-            android:layout_marginTop="4dp"/>
+            android:gravity="center_vertical"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/tvMessageTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="12:00"
+                android:textColor="#CCFFFFFF"
+                android:textSize="10sp"
+                android:layout_marginEnd="8dp"/>
+
+            <!-- ¡NUEVO! Botón de Borrar (solo visible para el autor) -->
+            <ImageView
+                android:id="@+id/ivDeleteMessage"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                app:tint="#CCFFFFFF"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:contentDescription="Borrar mensaje" />
+
+        </LinearLayout>
     </LinearLayout>
 
 </RelativeLayout>
