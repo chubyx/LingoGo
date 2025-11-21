@@ -14,7 +14,7 @@ data class UserProgress(
 )
 
 /**
- * Representa el progreso de una única lección (ej: "L1_VERB_TO_BE").
+ * Representa el progreso de una única lección (ej: "EN_L1_TO_BE").
  * Esto va DENTRO del mapa 'lessonsProgress'.
  */
 data class LessonProgress(
@@ -34,10 +34,14 @@ data class LessonProgress(
  * (No incluye la sub-colección de quiz)
  */
 data class Lesson(
-    val id: String = "", // El ID del documento (ej: "L1_VERB_TO_BE")
+    val id: String = "", // El ID del documento (ej: "EN_L1_TO_BE")
     val title: String = "",
     val totalStages: Int = 3,
-    val order: Int = 99
+    val order: Int = 99,
+
+    // --- ¡AQUÍ ESTÁ EL CAMBIO IMPORTANTE! ---
+    // Agregamos este campo para saber si la lección es de inglés ("en"), alemán ("de"), etc.
+    val languageId: String = "en"
 )
 
 /**

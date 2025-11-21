@@ -1,6 +1,5 @@
 package com.example.lingogo
 
-
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
@@ -10,9 +9,7 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-// --- AÑADE ESTA IMPORTACIÓN ---
 import com.example.linggo.models.Lesson
-// -----------------------------
 import com.example.linggo.models.QuizQuestion
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
@@ -29,8 +26,9 @@ class QuizActivity : AppCompatActivity() {
     // Datos de la Lección
     private var lessonId: String? = null
     private var lessonTitle: String? = null
+    private var languageId: String? = null // <--- Nuevo
     private var totalStages: Int = 3
-    private var currentLessonOrder: Int = -1 // <-- NUEVO: Para saber el orden
+    private var currentLessonOrder: Int = -1
     private var allQuestions = mutableListOf<QuizQuestion>()
 
     // Estado del Quiz
@@ -46,8 +44,8 @@ class QuizActivity : AppCompatActivity() {
     private lateinit var optionButtons: List<MaterialButton>
 
     // Colores
-    private val colorCorrect by lazy { ColorStateList.valueOf(Color.parseColor("#4CAF50")) } // Verde
-    private val colorIncorrect by lazy { ColorStateList.valueOf(Color.parseColor("#F44336")) } // Rojo
+    private val colorCorrect by lazy { ColorStateList.valueOf(Color.parseColor("#4CAF50")) }
+    private val colorIncorrect by lazy { ColorStateList.valueOf(Color.parseColor("#F44336")) }
     private val colorNeutral by lazy { ColorStateList(arrayOf(intArrayOf()), intArrayOf(getColor(com.google.android.material.R.color.design_default_color_primary))) }
 
 
@@ -62,10 +60,11 @@ class QuizActivity : AppCompatActivity() {
         lessonId = intent.getStringExtra("LESSON_ID")
         lessonTitle = intent.getStringExtra("LESSON_TITLE")
         totalStages = intent.getIntExtra("TOTAL_STAGES", 3)
-        currentLessonOrder = intent.getIntExtra("LESSON_ORDER", -1) // <-- NUEVO: Obtener el orden
+        currentLessonOrder = intent.getIntExtra("LESSON_ORDER", -1)
+        languageId = intent.getStringExtra("LANGUAGE_ID") // <--- Recibimos el idioma
 
         if (lessonId == null || currentLessonOrder == -1) {
-            Toast.makeText(this, "Error: No se encontró la lección o el orden", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Error de datos", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
@@ -97,11 +96,8 @@ class QuizActivity : AppCompatActivity() {
                 if (allQuestions.isNotEmpty()) {
                     showQuestionForCurrentStage()
                 } else {
-                    Toast.makeText(this, "No se encontraron preguntas para esta lección", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Error: No hay preguntas", Toast.LENGTH_SHORT).show()
                 }
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Error al cargar preguntas", Toast.LENGTH_SHORT).show()
             }
     }
 
@@ -122,9 +118,7 @@ class QuizActivity : AppCompatActivity() {
                 button.visibility = View.VISIBLE
                 button.backgroundTintList = colorNeutral
 
-                button.setOnClickListener {
-                    onOptionSelected(button)
-                }
+                button.setOnClickListener { onOptionSelected(button) }
             } else {
                 button.visibility = View.GONE
             }
@@ -148,23 +142,13 @@ class QuizActivity : AppCompatActivity() {
 
         Handler(Looper.getMainLooper()).postDelayed({
             currentStage++
-            if (currentStage > totalStages) {
-                finishQuiz()
-            } else {
-                showQuestionForCurrentStage()
-            }
+            if (currentStage > totalStages) finishQuiz()
+            else showQuestionForCurrentStage()
         }, 1500)
     }
 
     private fun finishQuiz() {
-        Toast.makeText(this, "Lección terminada. $correctStages / $totalStages correctas", Toast.LENGTH_LONG).show()
-
-        val userId = auth.currentUser?.uid
-        if (userId == null) {
-            Toast.makeText(this, "Error: Usuario no logueado", Toast.LENGTH_SHORT).show()
-            finish()
-            return
-        }
+        val userId = auth.currentUser?.uid ?: return
 
         val userDocRef = db.collection("users").document(userId)
         val pointsToAdd = correctStages * 200
@@ -173,55 +157,40 @@ class QuizActivity : AppCompatActivity() {
         val progressData = mapOf(
             "progress.totalPoints" to FieldValue.increment(pointsToAdd.toLong()),
             "progress.currentStreak" to FieldValue.increment(1),
-            "progress.lastLessonDate" to FieldValue.serverTimestamp(),
             "progress.lessonsProgress.$lessonId.status" to lessonStatus,
             "progress.lessonsProgress.$lessonId.stagesCompleted" to correctStages,
             "progress.lessonsProgress.$lessonId.totalStages" to totalStages
         )
 
-        userDocRef.update(progressData)
-            .addOnSuccessListener {
-                if (lessonStatus == "completed") {
-                    unlockNextLesson() // <-- Llamamos a la nueva función
-                } else {
-                    finish()
-                }
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Error al guardar progreso", Toast.LENGTH_SHORT).show()
-                finish()
-            }
+        userDocRef.update(progressData).addOnSuccessListener {
+            if (lessonStatus == "completed") unlockNextLesson()
+            else finish()
+        }
     }
 
-    // --- FUNCIÓN TOTALMENTE ACTUALIZADA ---
     private fun unlockNextLesson() {
         val userId = auth.currentUser?.uid ?: return
         val nextLessonOrder = currentLessonOrder + 1
+        val currentLang = languageId ?: "en" // Por defecto inglés si falla
 
-        // 1. Buscar en la colección 'lessons' la lección que tenga el siguiente 'order'
+        // BUSCAMOS LA SIGUIENTE LECCIÓN *DEL MISMO IDIOMA*
         db.collection("lessons")
+            .whereEqualTo("languageId", currentLang) // <--- Filtro importante
             .whereEqualTo("order", nextLessonOrder)
             .limit(1)
             .get()
             .addOnSuccessListener { snapshot ->
                 if (snapshot.isEmpty) {
-                    // No hay más lecciones
-                    Toast.makeText(this, "¡Felicidades, has completado todas las lecciones!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "¡Curso completado!", Toast.LENGTH_LONG).show()
                     finish()
                     return@addOnSuccessListener
                 }
 
-                // 2. Encontramos la siguiente lección
                 val nextLessonDoc = snapshot.documents.first()
                 val nextLessonId = nextLessonDoc.id
-                val nextLesson = nextLessonDoc.toObject(Lesson::class.java)
+                val nextLesson = nextLessonDoc.toObject(Lesson::class.java) ?: return@addOnSuccessListener
 
-                if (nextLesson == null) {
-                    finish()
-                    return@addOnSuccessListener
-                }
-
-                // 3. Crear el objeto de progreso para la nueva lección
+                // Desbloqueamos la siguiente
                 val userDocRef = db.collection("users").document(userId)
                 val unlockData = mapOf(
                     "progress.lessonsProgress.$nextLessonId.status" to "unlocked",
@@ -229,20 +198,10 @@ class QuizActivity : AppCompatActivity() {
                     "progress.lessonsProgress.$nextLessonId.totalStages" to nextLesson.totalStages
                 )
 
-                // 4. Actualizar el documento del usuario para desbloquearla
-                userDocRef.update(unlockData)
-                    .addOnSuccessListener {
-                        Toast.makeText(this, "¡Siguiente lección desbloqueada!", Toast.LENGTH_SHORT).show()
-                        finish() // Volver a la lista
-                    }
-                    .addOnFailureListener {
-                        Toast.makeText(this, "Error al desbloquear lección", Toast.LENGTH_SHORT).show()
-                        finish()
-                    }
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Error al buscar siguiente lección", Toast.LENGTH_SHORT).show()
-                finish()
+                userDocRef.update(unlockData).addOnSuccessListener {
+                    Toast.makeText(this, "¡Siguiente lección desbloqueada!", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
             }
     }
 }

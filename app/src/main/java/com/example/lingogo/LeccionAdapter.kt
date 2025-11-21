@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.linggo.models.Lesson
 import com.example.linggo.models.LessonProgress
 
-// Define un tipo de función para el clic
 typealias OnLessonClick = (Lesson, LessonProgress) -> Unit
 
 class LeccionAdapter(private val onLessonClick: OnLessonClick) :
@@ -22,7 +21,7 @@ class LeccionAdapter(private val onLessonClick: OnLessonClick) :
     fun submitList(lessons: List<Lesson>, progressMap: Map<String, LessonProgress>) {
         this.lessons = lessons
         this.progressMap = progressMap
-        notifyDataSetChanged() // Notificar al RecyclerView que los datos cambiaron
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LeccionViewHolder {
@@ -35,15 +34,14 @@ class LeccionAdapter(private val onLessonClick: OnLessonClick) :
 
     override fun onBindViewHolder(holder: LeccionViewHolder, position: Int) {
         val lesson = lessons[position]
-        // Obtener el progreso de esta lección, o usar uno por defecto (locked)
+        // Si no existe progreso guardado, el primero está desbloqueado, el resto bloqueado
         val progress = progressMap[lesson.id] ?: LessonProgress(
-            status = if (position == 0) "unlocked" else "locked", // Desbloquear la primera lección
+            status = if (position == 0) "unlocked" else "locked",
             stagesCompleted = 0,
             totalStages = lesson.totalStages
         )
         holder.bind(lesson, progress, onLessonClick)
     }
-
 
     class LeccionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val title: TextView = itemView.findViewById(R.id.textViewLessonTitle)
@@ -60,7 +58,8 @@ class LeccionAdapter(private val onLessonClick: OnLessonClick) :
                     progressText.visibility = View.GONE
                     actionButton.visibility = View.GONE
                     lockedIcon.visibility = View.VISIBLE
-                    card.alpha = 0.6f // Atenuar tarjeta
+                    card.alpha = 0.6f
+                    card.isEnabled = false
                 }
                 "unlocked" -> {
                     progressText.visibility = View.VISIBLE
@@ -68,31 +67,25 @@ class LeccionAdapter(private val onLessonClick: OnLessonClick) :
                     actionButton.visibility = View.VISIBLE
                     lockedIcon.visibility = View.GONE
                     card.alpha = 1.0f
+                    card.isEnabled = true
 
-                    if (progress.stagesCompleted > 0 && progress.stagesCompleted < lesson.totalStages) {
-                        actionButton.text = "Continuar"
-                    } else if (progress.stagesCompleted == lesson.totalStages) {
-                        actionButton.text = "Reintentar"
-                    } else {
-                        actionButton.text = "Comenzar"
-                    }
+                    if (progress.stagesCompleted > 0) actionButton.text = "Continuar"
+                    else actionButton.text = "Comenzar"
                 }
                 "completed" -> {
                     progressText.visibility = View.VISIBLE
-                    progressText.text = "¡Completado! ${progress.stagesCompleted} / ${lesson.totalStages}"
+                    progressText.text = "¡Completado!"
                     actionButton.visibility = View.VISIBLE
-                    actionButton.text = "Revisar"
+                    actionButton.text = "Repasar"
                     lockedIcon.visibility = View.GONE
                     card.alpha = 1.0f
+                    card.isEnabled = true
                 }
             }
 
-            // Configurar el click listener
+            actionButton.setOnClickListener { onLessonClick(lesson, progress) }
             itemView.setOnClickListener {
-                onLessonClick(lesson, progress)
-            }
-            actionButton.setOnClickListener {
-                onLessonClick(lesson, progress)
+                if(progress.status != "locked") onLessonClick(lesson, progress)
             }
         }
     }
