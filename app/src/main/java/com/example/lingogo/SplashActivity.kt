@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.progressindicator.CircularProgressIndicator
+import com.google.firebase.auth.FirebaseAuth // <--- IMPORTANTE
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
@@ -21,13 +22,15 @@ class SplashActivity : AppCompatActivity() {
     private lateinit var tvAppName: TextView
     private lateinit var progressBar: CircularProgressIndicator
     private lateinit var tvLoading: TextView
-    private val splashTimeOut: Long = 3500
+    // Puedes bajar esto a 2000 o 3000 si sientes que 3.5s es mucho tiempo
+    private val splashTimeOut: Long = 3000
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         enableEdgeToEdge()
 
+        // Asegúrate de que estos IDs existan en tu activity_splash.xml
         ivLogo = findViewById(R.id.ivLogoSplash)
         tvAppName = findViewById(R.id.tvAppNameSplash)
         progressBar = findViewById(R.id.progressBarSplash)
@@ -71,10 +74,22 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
+    // --- AQUÍ ESTÁ EL CAMBIO IMPORTANTE ---
     private fun checkUserSession() {
-        // Redirigimos siempre a MainActivity para evitar crashes
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
+        val currentUser = FirebaseAuth.getInstance().currentUser
+
+        if (currentUser != null) {
+            // SI ESTÁ LOGUEADO -> Va directo al Inicio (Dashboard)
+            val intent = Intent(this, InitionActivity::class.java)
+            // Estas flags borran el historial para que no pueda volver al splash con "atrás"
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+        } else {
+            // NO ESTÁ LOGUEADO -> Va al Login/Registro (MainActivity)
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+        }
         finish()
     }
 

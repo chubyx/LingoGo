@@ -1,53 +1,41 @@
 package com.example.lingogo
 
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
+import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.linggo.models.Lesson
-import com.example.linggo.models.QuizQuestion
-import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.firestore.SetOptions
 
 class QuizActivity : AppCompatActivity() {
 
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
 
-    // Datos de la Lección
-    private var lessonId: String? = null
-    private var lessonTitle: String? = null
-    private var languageId: String? = null // <--- Nuevo
-    private var totalStages: Int = 3
-    private var currentLessonOrder: Int = -1
-    private var allQuestions = mutableListOf<QuizQuestion>()
-
-    // Estado del Quiz
-    private var currentStage = 1
-    private var correctStages = 0
-    private var currentQuestion: QuizQuestion? = null
-    private var isClickable = true
-
     // Vistas
-    private lateinit var toolbar: MaterialToolbar
-    private lateinit var stageTitle: TextView
-    private lateinit var questionText: TextView
-    private lateinit var optionButtons: List<MaterialButton>
+    private lateinit var tvQuestionText: TextView
+    private lateinit var progressBar: ProgressBar
+    private lateinit var btnOption1: Button
+    private lateinit var btnOption2: Button
+    private lateinit var btnOption3: Button
+    private lateinit var btnCheck: Button
 
-    // Colores
-    private val colorCorrect by lazy { ColorStateList.valueOf(Color.parseColor("#4CAF50")) }
-    private val colorIncorrect by lazy { ColorStateList.valueOf(Color.parseColor("#F44336")) }
-    private val colorNeutral by lazy { ColorStateList(arrayOf(intArrayOf()), intArrayOf(getColor(com.google.android.material.R.color.design_default_color_primary))) }
+    // Datos del Intent
+    private var lessonId: String = ""
+    private var languageId: String = "en"
+    private var totalStages: Int = 1
 
+    // Lógica del Juego
+    private var currentStageToPlay = 1
+    private var questionsList = mutableListOf<QuizQuestionModel>()
+    private var currentQuestionIndex = 0
+    private var selectedAnswer = ""
+    private var correctAnswer = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,152 +44,228 @@ class QuizActivity : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
-        // Obtener datos del Intent
-        lessonId = intent.getStringExtra("LESSON_ID")
-        lessonTitle = intent.getStringExtra("LESSON_TITLE")
-        totalStages = intent.getIntExtra("TOTAL_STAGES", 3)
-        currentLessonOrder = intent.getIntExtra("LESSON_ORDER", -1)
-        languageId = intent.getStringExtra("LANGUAGE_ID") // <--- Recibimos el idioma
+        // 1. Recibir datos
+        lessonId = intent.getStringExtra("LESSON_ID") ?: ""
+        languageId = intent.getStringExtra("LANGUAGE_ID") ?: "en"
+        totalStages = intent.getIntExtra("TOTAL_STAGES", 1)
 
-        if (lessonId == null || currentLessonOrder == -1) {
-            Toast.makeText(this, "Error de datos", Toast.LENGTH_SHORT).show()
-            finish()
-            return
-        }
+        // 2. Vincular Vistas
+        tvQuestionText = findViewById(R.id.tvQuestionText)
+        progressBar = findViewById(R.id.quizProgressBar)
+        btnOption1 = findViewById(R.id.btnOption1)
+        btnOption2 = findViewById(R.id.btnOption2)
+        btnOption3 = findViewById(R.id.btnOption3)
+        btnCheck = findViewById(R.id.btnCheck)
 
-        // Inicializar Vistas
-        toolbar = findViewById(R.id.toolbarQuiz)
-        stageTitle = findViewById(R.id.textViewStageTitle)
-        questionText = findViewById(R.id.textViewQuestion)
-        optionButtons = listOf(
-            findViewById(R.id.buttonOption1),
-            findViewById(R.id.buttonOption2),
-            findViewById(R.id.buttonOption3),
-            findViewById(R.id.buttonOption4)
-        )
+        setupButtons()
 
-        toolbar.title = lessonTitle
-        toolbar.setNavigationOnClickListener { finish() }
-
-        loadQuizQuestions()
+        // 3. Determinar qué etapa jugar y cargar preguntas
+        determinarEtapaYCargar()
     }
 
-    private fun loadQuizQuestions() {
-        db.collection("lessons").document(lessonId!!)
+    private fun determinarEtapaYCargar() {
+        val userId = auth.currentUser?.uid ?: return
+
+        // Consultamos el progreso actual del usuario para esta lección
+        db.collection("users").document(userId)
+            .collection("courses").document(languageId)
+            .get()
+            .addOnSuccessListener { document ->
+                // Buscamos dentro del mapa lessonsProgress -> lessonId -> stagesCompleted
+                val lessonsMap = document.get("lessonsProgress") as? Map<String, Map<String, Any>>
+                val myLessonData = lessonsMap?.get(lessonId)
+
+                // Si stagesCompleted es 0, jugamos la etapa 1. Si es 1, jugamos la 2.
+                val stagesCompleted = (myLessonData?.get("stagesCompleted") as? Long)?.toInt() ?: 0
+
+                currentStageToPlay = stagesCompleted + 1
+
+                if (currentStageToPlay > totalStages) {
+                    Toast.makeText(this, "¡Ya completaste esta lección! Modo repaso.", Toast.LENGTH_SHORT).show()
+                    currentStageToPlay = totalStages // O cargar aleatorio
+                }
+
+                cargarPreguntas(currentStageToPlay)
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Error al cargar progreso", Toast.LENGTH_SHORT).show()
+                finish()
+            }
+    }
+
+    private fun cargarPreguntas(stage: Int) {
+        tvQuestionText.text = "Cargando etapa $stage..."
+
+        // FILTRO IMPORTANTE: .whereEqualTo("stage", stage)
+        db.collection("lessons").document(lessonId)
             .collection("quiz")
-            .orderBy("stage")
+            .whereEqualTo("stage", stage)
             .get()
             .addOnSuccessListener { snapshot ->
-                allQuestions = snapshot.documents.mapNotNull { it.toObject<QuizQuestion>() }.toMutableList()
-                if (allQuestions.isNotEmpty()) {
-                    showQuestionForCurrentStage()
+                questionsList.clear()
+                for (doc in snapshot) {
+                    val q = doc.toObject(QuizQuestionModel::class.java)
+                    questionsList.add(q)
+                }
+
+                if (questionsList.isNotEmpty()) {
+                    mostrarPregunta()
                 } else {
-                    Toast.makeText(this, "Error: No hay preguntas", Toast.LENGTH_SHORT).show()
+                    tvQuestionText.text = "No hay preguntas para esta etapa."
                 }
             }
     }
 
-    private fun showQuestionForCurrentStage() {
-        currentQuestion = allQuestions.find { it.stage == currentStage }
-        if (currentQuestion == null) {
-            finishQuiz()
+    private fun mostrarPregunta() {
+        if (currentQuestionIndex >= questionsList.size) {
+            terminarLeccion()
             return
         }
 
-        isClickable = true
-        stageTitle.text = "Etapa $currentStage / $totalStages"
-        questionText.text = currentQuestion!!.questionText
+        val q = questionsList[currentQuestionIndex]
+        tvQuestionText.text = q.questionText
+        correctAnswer = q.correctAnswer
 
-        optionButtons.forEachIndexed { index, button ->
-            if (index < currentQuestion!!.options.size) {
-                button.text = currentQuestion!!.options[index]
-                button.visibility = View.VISIBLE
-                button.backgroundTintList = colorNeutral
+        // Resetear botones
+        resetButtonStyles()
+        btnCheck.isEnabled = false
+        btnCheck.text = "Comprobar"
+        btnCheck.setBackgroundColor(Color.parseColor("#E0E0E0")) // Gris desactivado
+        selectedAnswer = ""
 
-                button.setOnClickListener { onOptionSelected(button) }
-            } else {
-                button.visibility = View.GONE
-            }
+        // Asignar opciones (Asegúrate de que haya 3 opciones en Firebase o maneja el index)
+        if (q.options.size >= 3) {
+            btnOption1.text = q.options[0]
+            btnOption2.text = q.options[1]
+            btnOption3.text = q.options[2]
+        }
+
+        // Actualizar barra de progreso
+        val progreso = ((currentQuestionIndex.toFloat() / questionsList.size.toFloat()) * 100).toInt()
+        progressBar.progress = progreso
+    }
+
+    private fun setupButtons() {
+        val listener = View.OnClickListener { view ->
+            val button = view as Button
+            selectedAnswer = button.text.toString()
+
+            // Visualmente marcar seleccionado
+            resetButtonStyles()
+            button.setBackgroundColor(Color.parseColor("#D1C4E9")) // Morado claro selección
+            button.setTextColor(Color.BLACK)
+
+            // Activar botón comprobar
+            btnCheck.isEnabled = true
+            btnCheck.setBackgroundColor(Color.parseColor("#58CC02")) // Verde activo
+        }
+
+        btnOption1.setOnClickListener(listener)
+        btnOption2.setOnClickListener(listener)
+        btnOption3.setOnClickListener(listener)
+
+        btnCheck.setOnClickListener {
+            verificarRespuesta()
         }
     }
 
-    private fun onOptionSelected(selectedButton: MaterialButton) {
-        if (!isClickable) return
-        isClickable = false
-
-        val selectedAnswer = selectedButton.text.toString()
-        val correctAnswer = currentQuestion!!.correctAnswer
+    private fun verificarRespuesta() {
+        if (btnCheck.text == "Continuar") {
+            // Pasar a la siguiente pregunta
+            currentQuestionIndex++
+            mostrarPregunta()
+            return
+        }
 
         if (selectedAnswer == correctAnswer) {
-            correctStages++
-            selectedButton.backgroundTintList = colorCorrect
-        } else {
-            selectedButton.backgroundTintList = colorIncorrect
-            optionButtons.find { it.text == correctAnswer }?.backgroundTintList = colorCorrect
-        }
+            // CORRECTO
+            Toast.makeText(this, "¡Correcto!", Toast.LENGTH_SHORT).show()
+            btnCheck.text = "Continuar"
+            btnCheck.setBackgroundColor(Color.parseColor("#58CC02"))
 
-        Handler(Looper.getMainLooper()).postDelayed({
-            currentStage++
-            if (currentStage > totalStages) finishQuiz()
-            else showQuestionForCurrentStage()
-        }, 1500)
+            // Pintar la opción correcta de verde
+            when(selectedAnswer) {
+                btnOption1.text -> btnOption1.setBackgroundColor(Color.GREEN)
+                btnOption2.text -> btnOption2.setBackgroundColor(Color.GREEN)
+                btnOption3.text -> btnOption3.setBackgroundColor(Color.GREEN)
+            }
+        } else {
+            // INCORRECTO
+            Toast.makeText(this, "Incorrecto. Era: $correctAnswer", Toast.LENGTH_SHORT).show()
+            btnCheck.text = "Continuar"
+            btnCheck.setBackgroundColor(Color.RED)
+        }
     }
 
-    private fun finishQuiz() {
+    private fun terminarLeccion() {
+        progressBar.progress = 100
+        tvQuestionText.text = "¡Lección Completada!"
+        btnOption1.visibility = View.GONE
+        btnOption2.visibility = View.GONE
+        btnOption3.visibility = View.GONE
+        btnCheck.visibility = View.GONE
+
+        // --- GUARDAR PROGRESO EN FIREBASE ---
+        // 1. Sumar puntos al Dashboard
+        ProgressManager.actualizarProgreso(languageId, 15) {
+            // Callback: Puntos sumados exitosamente
+        }
+
+        // 2. Marcar esta etapa como completada
+        guardarEtapaCompletada()
+    }
+
+    // Esta función estaba cortada, aquí está completa
+    private fun guardarEtapaCompletada() {
         val userId = auth.currentUser?.uid ?: return
 
-        val userDocRef = db.collection("users").document(userId)
-        val pointsToAdd = correctStages * 200
-        val lessonStatus = if (correctStages == totalStages) "completed" else "unlocked"
+        val docRef = db.collection("users").document(userId)
+            .collection("courses").document(languageId)
 
-        val progressData = mapOf(
-            "progress.totalPoints" to FieldValue.increment(pointsToAdd.toLong()),
-            "progress.currentStreak" to FieldValue.increment(1),
-            "progress.lessonsProgress.$lessonId.status" to lessonStatus,
-            "progress.lessonsProgress.$lessonId.stagesCompleted" to correctStages,
-            "progress.lessonsProgress.$lessonId.totalStages" to totalStages
+        // Preparamos los datos anidados
+        // Esto crea: lessonsProgress -> {ID_LECCION} -> {stagesCompleted: 1}
+        val dataToSave = hashMapOf(
+            "lessonsProgress" to hashMapOf(
+                lessonId to hashMapOf(
+                    "stagesCompleted" to currentStageToPlay,
+                    "totalStages" to totalStages
+                )
+            ),
+            // Aseguramos que currentLessonId apunte a esta lección
+            "currentLessonId" to lessonId
         )
 
-        userDocRef.update(progressData).addOnSuccessListener {
-            if (lessonStatus == "completed") unlockNextLesson()
-            else finish()
-        }
-    }
-
-    private fun unlockNextLesson() {
-        val userId = auth.currentUser?.uid ?: return
-        val nextLessonOrder = currentLessonOrder + 1
-        val currentLang = languageId ?: "en" // Por defecto inglés si falla
-
-        // BUSCAMOS LA SIGUIENTE LECCIÓN *DEL MISMO IDIOMA*
-        db.collection("lessons")
-            .whereEqualTo("languageId", currentLang) // <--- Filtro importante
-            .whereEqualTo("order", nextLessonOrder)
-            .limit(1)
-            .get()
-            .addOnSuccessListener { snapshot ->
-                if (snapshot.isEmpty) {
-                    Toast.makeText(this, "¡Curso completado!", Toast.LENGTH_LONG).show()
-                    finish()
-                    return@addOnSuccessListener
-                }
-
-                val nextLessonDoc = snapshot.documents.first()
-                val nextLessonId = nextLessonDoc.id
-                val nextLesson = nextLessonDoc.toObject(Lesson::class.java) ?: return@addOnSuccessListener
-
-                // Desbloqueamos la siguiente
-                val userDocRef = db.collection("users").document(userId)
-                val unlockData = mapOf(
-                    "progress.lessonsProgress.$nextLessonId.status" to "unlocked",
-                    "progress.lessonsProgress.$nextLessonId.stagesCompleted" to 0,
-                    "progress.lessonsProgress.$nextLessonId.totalStages" to nextLesson.totalStages
-                )
-
-                userDocRef.update(unlockData).addOnSuccessListener {
-                    Toast.makeText(this, "¡Siguiente lección desbloqueada!", Toast.LENGTH_SHORT).show()
-                    finish()
-                }
+        // USAMOS SET con MERGE: Esto es la clave.
+        // Si no existe, lo crea. Si existe, solo actualiza estos campos sin borrar los puntos.
+        docRef.set(dataToSave, SetOptions.merge())
+            .addOnSuccessListener {
+                Toast.makeText(this, "¡Progreso Guardado!", Toast.LENGTH_LONG).show()
+                finish()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Error guardando etapa: ${e.message}", Toast.LENGTH_SHORT).show()
+                finish()
             }
     }
+
+    // Esta función faltaba por completo
+    private fun resetButtonStyles() {
+        val defaultColor = Color.parseColor("#FFFFFF") // Blanco
+        btnOption1.setBackgroundColor(defaultColor)
+        btnOption2.setBackgroundColor(defaultColor)
+        btnOption3.setBackgroundColor(defaultColor)
+
+        btnOption1.setTextColor(Color.BLACK)
+        btnOption2.setTextColor(Color.BLACK)
+        btnOption3.setTextColor(Color.BLACK)
+    }
 }
+
+// ESTA CLASE FALTABA AL FINAL DEL ARCHIVO
+data class QuizQuestionModel(
+    val id: String = "",
+    val stage: Int = 1,          // <--- Movemos el Stage a la 2da posición
+    val questionText: String = "", // <--- La pregunta pasa a la 3ra posición
+    val options: List<String> = emptyList(),
+    val correctAnswer: String = ""
+)
