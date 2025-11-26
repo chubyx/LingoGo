@@ -5,16 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F4F4F4"
+    android:background="?attr/colorSurfaceVariant"
     tools:context=".CrearPostActivity">
 
-    <!-- Barra de Aplicación -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarCrearPost"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/naranja"
-        app:titleTextColor="@color/white" />
+        android:background="?attr/colorPrimary"
+        app:titleTextColor="?attr/colorOnPrimary"
+        app:navigationIconTint="?attr/colorOnPrimary" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -31,13 +31,15 @@
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="2dp"
-                app:contentPadding="16dp">
+                app:contentPadding="16dp"
+                app:cardBackgroundColor="?attr/colorSurface">
 
                 <EditText
                     android:id="@+id/etPostTexto"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Escribe tu duda o comparte tu progreso..."
+                    android:textColor="?attr/colorOnSurface"
                     android:minLines="5"
                     android:gravity="top"
                     android:background="@android:color/transparent"
@@ -50,8 +52,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Publicar"
-                android:backgroundTint="@color/naranja"
-                android:textColor="@color/white"
+                android:backgroundTint="?attr/colorPrimary"
+                android:textColor="?attr/colorOnPrimary"
                 android:layout_marginTop="16dp"
                 android:enabled="false"
                 tools:enabled="true" />

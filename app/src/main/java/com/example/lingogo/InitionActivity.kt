@@ -1,5 +1,6 @@
 package com.example.lingogo
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -27,7 +28,7 @@ class InitionActivity : AppCompatActivity() {
 
     private val TAG = "InitionActivity"
 
-    // --- Vistas de Navegación ---
+    // --- Vistas ---
     private lateinit var headerCard: CardView
     private lateinit var cardViewComunidad: CardView
     private lateinit var cardViewConfig: CardView
@@ -36,89 +37,194 @@ class InitionActivity : AppCompatActivity() {
     private lateinit var cardEmpezarLeccion: CardView
     private lateinit var cardVoiceIoT: CardView
 
-    // --- Vistas del Header y Spinner ---
     private lateinit var tvBienvenidaHeader: TextView
     private lateinit var tvSubtituloHeader: TextView
     private lateinit var spinnerLanguages: Spinner
+
+    // Bandera para evitar bucles infinitos al iniciar el spinner
     private var isUserInteracting = false
 
-    // --- Vistas del Dashboard (Progreso y Racha) ---
     private lateinit var txtStreakCount: TextView
     private lateinit var txtPointsCount: TextView
     private lateinit var progressBarDaily: ProgressBar
 
-    // --- Vistas de la Tarjeta Lección ---
     private lateinit var tvLeccionTitulo: TextView
     private lateinit var tvLeccionDetalle: TextView
     private lateinit var tvLeccionProgreso: TextView
 
-    // --- Vistas de Prueba (Room) ---
+    // Prueba Room
     private lateinit var etPalabraTemp: EditText
     private lateinit var btnGuardarTemp: Button
 
-    // --- Firebase y Room ---
+    // --- Backend ---
     private lateinit var auth: FirebaseAuth
     private lateinit var dbFirestore: FirebaseFirestore
     private lateinit var dbRoom: AppDatabase
 
+    // Launcher para volver de Configuración (por si cambian algo allí)
     private val configActivityLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            Log.d(TAG, "Regresando de Configuración. Re-dibujando...")
+            // Al volver, recreamos por si cambiaron el modo oscuro o idioma
             recreate()
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // 1. APLICAR TEMA ANTES DE LA UI (CRUCIAL PARA EL CAMBIO DE COLOR)
+        val prefs = getSharedPreferences("Ajustes", Context.MODE_PRIVATE)
+        val idiomaGuardado = prefs.getString("idioma_seleccionado", "es") ?: "es"
+
+        // Obtenemos el ID del tema (R.style.Theme_LingoGo_English, etc.) desde tu LanguageManager
+        val themeId = LanguageManager.getThemeForLanguage(idiomaGuardado)
+        setTheme(themeId)
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_inicio)
 
-        // Inicializar Backend
+        // 2. Inicializar Backend
         auth = FirebaseAuth.getInstance()
         dbFirestore = FirebaseFirestore.getInstance()
         dbRoom = AppDatabase.getDatabase(applicationContext)
 
-        // --- ENLAZAR VISTAS (findViewById) ---
+        // 3. Enlazar Vistas
+        initViews()
 
+        // 4. Configurar Componentes
+        setupListeners()
+        setupLanguageSpinner(idiomaGuardado)
+
+        // 5. Cargar datos iniciales
+        checkUserSession()
+    }
+
+    private fun initViews() {
         // Header
         headerCard = findViewById(R.id.headerCard)
         tvBienvenidaHeader = findViewById(R.id.tvBienvenidaHeader)
         tvSubtituloHeader = findViewById(R.id.tvSubtituloHeader)
         spinnerLanguages = findViewById(R.id.spinnerLanguages)
 
-        // Dashboard (NUEVO)
+        // Dashboard
         txtStreakCount = findViewById(R.id.txtStreakCount)
         txtPointsCount = findViewById(R.id.txtPointsCount)
         progressBarDaily = findViewById(R.id.progressBarDaily)
 
-        // Tarjeta Lección (NUEVO)
+        // Lección
         cardEmpezarLeccion = findViewById(R.id.cardEmpezarLeccion)
         tvLeccionTitulo = findViewById(R.id.tvLeccionTitulo)
         tvLeccionDetalle = findViewById(R.id.tvLeccionDetalle)
         tvLeccionProgreso = findViewById(R.id.tvLeccionProgreso)
 
-        // Tarjetas de Navegación
+        // Navegación
         cardViewComunidad = findViewById(R.id.cardComunidad)
         cardViewConfig = findViewById(R.id.cardConfiguracion)
         cardGames = findViewById(R.id.cardGames)
         cardPalabrasFavoritas = findViewById(R.id.cardPalabrasFavoritas)
         cardVoiceIoT = findViewById(R.id.cardVoiceIoT)
 
-        // Prueba Room
+        // Room Test
         etPalabraTemp = findViewById(R.id.etPalabraFavoritaTemp)
         btnGuardarTemp = findViewById(R.id.btnGuardarPalabraTemp)
-
-        // --- CONFIGURACIÓN ---
-        setupListeners()
-        setupLanguageSpinner()
     }
 
     // ---------------------------------------------------------
-    // LOGICA DEL DASHBOARD (PROGRESO)
+    // LOGICA DEL SPINNER DE IDIOMAS Y CAMBIO DE COLOR
     // ---------------------------------------------------------
+
+    private fun setupLanguageSpinner(idiomaActualId: String) {
+        val adapter = LanguageSpinnerAdapter(this, LanguageManager.availableLanguages)
+        spinnerLanguages.adapter = adapter
+
+        // Pre-seleccionar el idioma guardado en SharedPreferences para que coincida con el color
+        val index = LanguageManager.availableLanguages.indexOfFirst { it.id == idiomaActualId }
+        if (index >= 0) {
+            spinnerLanguages.setSelection(index, false) // false evita disparar el listener al iniciar
+        }
+
+        spinnerLanguages.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                // Solo cambiamos si el usuario tocó el spinner (evita bucles al iniciar)
+                if (isUserInteracting) {
+                    val selectedLang = LanguageManager.availableLanguages[position]
+
+                    // Verificamos si realmente cambió el idioma para no recargar innecesariamente
+                    val prefs = getSharedPreferences("Ajustes", Context.MODE_PRIVATE)
+                    val currentStored = prefs.getString("idioma_seleccionado", "es")
+
+                    if (selectedLang.id != currentStored) {
+                        cambiarIdioma(selectedLang.id)
+                    }
+                }
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+
+        // Detectar interacción real del usuario
+        spinnerLanguages.setOnTouchListener { v, event ->
+            isUserInteracting = true
+            v.performClick()
+            false
+        }
+    }
+
+    private fun cambiarIdioma(nuevoIdiomaId: String) {
+        val userId = auth.currentUser?.uid ?: return
+
+        // 1. Guardar en SharedPreferences (Para el color del Tema)
+        val prefs = getSharedPreferences("Ajustes", Context.MODE_PRIVATE)
+        prefs.edit().putString("idioma_seleccionado", nuevoIdiomaId).apply()
+
+        // 2. Guardar en Firebase (Para sincronizar datos)
+        dbFirestore.collection("users").document(userId)
+            .update("activeLanguageId", nuevoIdiomaId)
+            .addOnSuccessListener {
+                // 3. RECREAR LA ACTIVIDAD PARA APLICAR EL NUEVO COLOR
+                // Esto hará que onCreate se ejecute de nuevo, lea el nuevo ID de Prefs
+                // y aplique el setTheme correcto.
+                recreate()
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Error al guardar idioma", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    // ---------------------------------------------------------
+    // DASHBOARD Y FIREBASE
+    // ---------------------------------------------------------
+
+    private fun checkUserSession() {
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            cargarDatosUsuario(currentUser.uid)
+        } else {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }
+    }
+
+    private fun cargarDatosUsuario(userId: String) {
+        // Obtenemos el idioma actual de SharedPreferences para cargar el dashboard inmediato
+        val prefs = getSharedPreferences("Ajustes", Context.MODE_PRIVATE)
+        val idiomaActual = prefs.getString("idioma_seleccionado", "es") ?: "es"
+
+        // Cargamos dashboard inmediatamente con lo que tenemos localmente
+        cargarDashboard(idiomaActual)
+
+        // Obtenemos datos del usuario (Nombre, etc.)
+        dbFirestore.collection("users").document(userId).get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    val nombre = document.getString("nombre") ?: "Estudiante"
+                    tvBienvenidaHeader.text = getString(R.string.inicio_bienvenida_usuario, nombre)
+
+                    // Nota: Ya no seteamos el spinner aquí para evitar conflictos con el Theme.
+                    // El spinner se controla via SharedPreferences en setupLanguageSpinner.
+                }
+            }
+    }
 
     private fun cargarDashboard(languageId: String) {
         val userId = auth.currentUser?.uid ?: return
 
-        // Escuchamos cambios en tiempo real en: users/{uid}/courses/{languageId}
         dbFirestore.collection("users").document(userId)
             .collection("courses").document(languageId)
             .addSnapshotListener { snapshot, e ->
@@ -128,18 +234,16 @@ class InitionActivity : AppCompatActivity() {
                 }
 
                 if (snapshot != null && snapshot.exists()) {
-                    // Convertimos el documento a objeto
                     val data = snapshot.toObject(DashboardData::class.java)
                     if (data != null) {
                         actualizarVistasDashboard(data)
                         actualizarTarjetaLeccion(data)
                     }
                 } else {
-                    // Si no existe progreso para este idioma, mostrar ceros
-                    tvLeccionTitulo.text = "¡Comienza el curso!"
-                    tvLeccionDetalle.text = "Lección 1: Introducción"
-                    tvLeccionProgreso.text = "0% completado"
-
+                    // Estado vacío (curso nuevo)
+                    tvLeccionTitulo.text = getString(R.string.inicio_continuar_leccion)
+                    tvLeccionDetalle.text = "Lección 1"
+                    tvLeccionProgreso.text = "0%"
                     txtPointsCount.text = "⭐ 0"
                     txtStreakCount.text = "🔥 0"
                     progressBarDaily.progress = 0
@@ -156,131 +260,26 @@ class InitionActivity : AppCompatActivity() {
     private fun actualizarTarjetaLeccion(data: DashboardData) {
         val lessonId = data.currentLessonId
 
-        // 1. Validar que tengamos un ID válido
         if (lessonId.isEmpty()) {
-            tvLeccionTitulo.text = "¡Curso completado!" // O mensaje por defecto
-            tvLeccionDetalle.text = "No hay lección activa"
-            tvLeccionProgreso.text = ""
+            tvLeccionTitulo.text = "Curso finalizado"
+            tvLeccionDetalle.text = "¡Felicidades!"
+            tvLeccionProgreso.text = "100%"
             return
         }
 
-        // 2. Calcular porcentaje (Esto sí funcionaba)
         val progressDetail = data.lessonsProgress[lessonId] ?: LessonProgressDetail()
         val porcentaje = if (progressDetail.totalStages > 0) {
             (progressDetail.stagesCompleted.toFloat() / progressDetail.totalStages.toFloat()) * 100
-        } else {
-            0f
-        }
-        tvLeccionProgreso.text = "Progreso: ${porcentaje.toInt()}% completado"
+        } else { 0f }
 
-        // 3. Buscar el Título en Firebase (AQUÍ ESTÁ EL ERROR VISUAL)
-        Log.d(TAG, "Buscando lección con ID: '$lessonId' en la colección 'lessons'") // <-- CHIVATO EN LOGCAT
+        tvLeccionProgreso.text = "Progreso: ${porcentaje.toInt()}%"
 
         dbFirestore.collection("lessons").document(lessonId).get()
             .addOnSuccessListener { doc ->
                 if (doc.exists()) {
-                    val titulo = doc.getString("title") ?: "Sin título"
-                    val descripcion = doc.getString("description") ?: ""
-
-                    tvLeccionTitulo.text = "Continuar"
-                    tvLeccionDetalle.text = "$titulo: $descripcion"
-                } else {
-                    // Si el documento NO existe en la colección 'lessons'
-                    Log.e(TAG, "ERROR: El documento '$lessonId' no existe en 'lessons'.")
-                    tvLeccionTitulo.text = "Error de datos"
-                    tvLeccionDetalle.text = "No se encontró la lección '$lessonId'"
-                }
-            }
-            .addOnFailureListener { e ->
-                // Si falló la conexión o permisos
-                Log.e(TAG, "ERROR al descargar lección", e)
-                tvLeccionTitulo.text = "Error de conexión"
-                tvLeccionDetalle.text = "Intenta nuevamente"
-            }
-    }
-
-    // ---------------------------------------------------------
-    // LOGICA DEL SPINNER DE IDIOMAS
-    // ---------------------------------------------------------
-
-    private fun setupLanguageSpinner() {
-        val adapter = LanguageSpinnerAdapter(this, LanguageManager.availableLanguages)
-        spinnerLanguages.adapter = adapter
-
-        spinnerLanguages.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                if (isUserInteracting) {
-                    val selectedLang = LanguageManager.availableLanguages[position]
-                    cambiarIdioma(selectedLang.id)
-                }
-            }
-            override fun onNothingSelected(parent: AdapterView<*>) {}
-        }
-
-        spinnerLanguages.setOnTouchListener { v, event ->
-            isUserInteracting = true
-            v.performClick()
-            false
-        }
-    }
-
-    private fun cambiarIdioma(nuevoIdiomaId: String) {
-        val userId = auth.currentUser?.uid ?: return
-
-        // 1. Guardar preferencia en Firebase
-        dbFirestore.collection("users").document(userId)
-            .update("activeLanguageId", nuevoIdiomaId)
-            .addOnSuccessListener {
-                val nombreIdioma = LanguageManager.getLanguageById(nuevoIdiomaId)?.name
-                Toast.makeText(this, "Cambiado a $nombreIdioma", Toast.LENGTH_SHORT).show()
-            }
-
-        // 2. Cargar el dashboard del nuevo idioma inmediatamente
-        cargarDashboard(nuevoIdiomaId)
-    }
-
-    // ---------------------------------------------------------
-    // CARGA DE DATOS INICIAL
-    // ---------------------------------------------------------
-
-    override fun onStart() {
-        super.onStart()
-        checkUserSession()
-    }
-
-    private fun checkUserSession() {
-        val currentUser = auth.currentUser
-        if (currentUser != null) {
-            cargarDatosUsuario(currentUser.uid)
-        } else {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-        }
-    }
-
-    private fun cargarDatosUsuario(userId: String) {
-        dbFirestore.collection("users").document(userId).get()
-            .addOnSuccessListener { document ->
-                if (document != null && document.exists()) {
-                    val nombre = document.getString("nombre") ?: "Estudiante"
-
-                    // Configurar idioma guardado
-                    val activeLangId = document.getString("activeLanguageId") ?: "en"
-                    val langIndex = LanguageManager.availableLanguages.indexOfFirst { it.id == activeLangId }
-
-                    if (langIndex >= 0) {
-                        spinnerLanguages.setSelection(langIndex)
-                    }
-
-                    // Textos
-                    tvBienvenidaHeader.text = getString(R.string.inicio_bienvenida_usuario, nombre)
-                    tvSubtituloHeader.text = getString(R.string.inicio_listo_aprender)
-
-                    // **IMPORTANTE**: Cargar el dashboard inicial con el idioma detectado
-                    cargarDashboard(activeLangId)
-
-                } else {
-                    tvBienvenidaHeader.text = getString(R.string.inicio_hola_estudiante)
+                    val titulo = doc.getString("title") ?: "Lección"
+                    tvLeccionTitulo.text = getString(R.string.inicio_continuar_leccion)
+                    tvLeccionDetalle.text = titulo
                 }
             }
     }
@@ -291,62 +290,28 @@ class InitionActivity : AppCompatActivity() {
 
     private fun setupListeners() {
         headerCard.setOnClickListener { startActivity(Intent(this, PerfilActivity::class.java)) }
-        cardViewComunidad.setOnClickListener {
-            startActivity(
-                Intent(
-                    this,
-                    CommunityActivity::class.java
-                )
-            )
-        }
+        cardViewComunidad.setOnClickListener { startActivity(Intent(this, CommunityActivity::class.java)) }
         cardGames.setOnClickListener { startActivity(Intent(this, GamesActivity::class.java)) }
-        cardPalabrasFavoritas.setOnClickListener {
-            startActivity(
-                Intent(
-                    this,
-                    PalabrasFavoritasActivity::class.java
-                )
-            )
-        }
+        cardPalabrasFavoritas.setOnClickListener { startActivity(Intent(this, PalabrasFavoritasActivity::class.java)) }
+
         cardViewConfig.setOnClickListener {
-            configActivityLauncher.launch(
-                Intent(
-                    this,
-                    ConfigActivity::class.java
-                )
-            )
+            configActivityLauncher.launch(Intent(this, ConfigActivity::class.java))
         }
-        cardVoiceIoT.setOnClickListener {
-            startActivity(
-                Intent(
-                    this,
-                    VoiceControlActivity::class.java
-                )
-            )
-        }
+
+        cardVoiceIoT.setOnClickListener { startActivity(Intent(this, VoiceControlActivity::class.java)) }
 
         cardEmpezarLeccion.setOnClickListener {
             val intent = Intent(this, ListaLeccionesActivity::class.java)
-
-            // Obtener el idioma seleccionado en el Spinner (ej: "en" o "de")
+            // Pasamos el ID del idioma seleccionado actualmente
             val languageOption = spinnerLanguages.selectedItem as LanguageOption
             intent.putExtra("LANGUAGE_ID", languageOption.id)
-
-            // Opcional: También podrías enviar el título de la lección actual si quisieras
-            // intent.putExtra("LESSON_ID", currentLessonId)
-
             startActivity(intent)
         }
 
-        // Prueba Room
-
+        // Room
         btnGuardarTemp.setOnClickListener {
-            val textoPalabra = etPalabraTemp.text.toString().trim()
-            if (textoPalabra.isNotEmpty()) {
-                guardarPalabraFavorita(textoPalabra) // Volvemos a tu función original
-            } else {
-                Toast.makeText(this, "Escribe una palabra", Toast.LENGTH_SHORT).show()
-            }
+            val texto = etPalabraTemp.text.toString().trim()
+            if (texto.isNotEmpty()) guardarPalabraFavorita(texto)
         }
     }
 
@@ -355,7 +320,7 @@ class InitionActivity : AppCompatActivity() {
             try {
                 dbRoom.favoriteWordDao().addFavorite(FavoriteWord(word = palabra))
                 runOnUiThread {
-                    Toast.makeText(this@InitionActivity, "¡'$palabra' guardada!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@InitionActivity, "Guardado", Toast.LENGTH_SHORT).show()
                     etPalabraTemp.text.clear()
                 }
             } catch (e: Exception) {
@@ -365,10 +330,7 @@ class InitionActivity : AppCompatActivity() {
     }
 }
 
-// ---------------------------------------------------------
-// MODELOS DE DATOS (Ponlos aquí o en un archivo aparte)
-// ---------------------------------------------------------
-
+// Modelos (Si no los tienes en otro archivo)
 data class DashboardData(
     val points: Int = 0,
     val streak: Int = 0,
@@ -381,6 +343,5 @@ data class LessonProgressDetail(
     val stagesCompleted: Int = 0,
     val totalStages: Int = 1
 ) {
-    // Constructor vacío para Firebase
     constructor() : this(0, 1)
 }

@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">LingoGo</string>
     <string name="lingogo">LingoGo</string>
-    <string name="default_web_client_id" translatable="false">"820060246747-8mh0mrb2807qjc73h0l8ferbuen7vmku.apps.googleusercontent.com"</string>
 
     <string name="tu_profesor_de_ingles_de_bolsillo">Dein Englischlehrer für die Hosentasche</string>
     <string name="correo_electr_nico">E-Mail</string>
@@ -10,14 +9,14 @@
     <string name="no_tienes_cuenta_reg_strate_aqu">Kein Konto? Hier registrieren</string>
     <string name="cerrar_sesi_n">Abmelden</string>
 
-    <string name="inicio_hola_estudiante">Hallo, Lernender!</string>
+    <string name="inicio_hola_estudiante">Hallo, Schüler</string>
     <string name="inicio_bienvenida_usuario">Willkommen, %1$s!</string>
     <string name="inicio_listo_aprender">Bereit zu lernen?</string>
-    <string name="inicio_progreso_hoy">Dein heutiger Fortschritt</string>
+    <string name="inicio_progreso_hoy">Dein Fortschritt heute</string>
     <string name="inicio_racha">Serie</string>
     <string name="inicio_puntos">Punkte</string>
     <string name="inicio_continuar_leccion">Lektion fortsetzen</string>
-    <string name="inicio_leccion_detalle">Lektion 5: Präsens</string>
+    <string name="inicio_leccion_detalle">Lektion 5: Simple Present</string>
     <string name="inicio_leccion_progreso">Fortschritt: 75% abgeschlossen</string>
     <string name="inicio_mi_progreso">Mein Fortschritt</string>
     <string name="inicio_perfil">Profil</string>
@@ -25,35 +24,72 @@
     <string name="inicio_comunidad">Community</string>
     <string name="inicio_juegos">Spiele</string>
     <string name="inicio_ajustes">Einstellungen</string>
-    <string name="inicio_tip_del_dia">Tipp des Tages: 5 Minuten üben!</string>
+    <string name="inicio_tip_del_dia">Tipp des Tages: Übe 5 Minuten!</string>
+
+    <string name="splash_loading">Dein Lernweg wird vorbereitet...</string>
+    <string name="splash_version">v2.0</string>
 
     <string name="configuraci_n">⚙️ Einstellungen</string>
     <string name="config_categoria_general">Allgemein</string>
-    <string name="idioma_de_la_aplicaci_n">Sprache der Anwendung</string>
-    <string name="config_idioma_subtitulo">Wählen Sie Ihre bevorzugte Sprache</string>
-    <string name="config_categoria_apariencia">Aussehen &amp; Ton</string>
+    <string name="idioma_de_la_aplicaci_n">App-Sprache</string>
+    <string name="config_idioma_subtitulo">Wähle deine bevorzugte Sprache</string>
+    <string name="config_categoria_apariencia">Erscheinungsbild &amp; Ton</string>
     <string name="notificaciones">Benachrichtigungen</string>
     <string name="activar_notificaciones">Benachrichtigungen aktivieren</string>
     <string name="tema">Thema</string>
     <string name="claro">Hell</string>
     <string name="oscuro">Dunkel</string>
+    <string name="language_picker_title">Wähle eine Sprache</string>
 
     <string name="favoritas_titulo">Meine Lieblingswörter</string>
     <string name="favoritas_no_hay">Du hast noch keine Lieblingswörter</string>
     <string name="favoritas_borrar">Wort löschen</string>
+    <string name="error_palabra_vacia">Das Wort darf nicht leer sein</string>
+
+    <string name="btn_comenzar">Starten</string>
+    <string name="desc_flag">Sprachflagge</string>
+    <string name="desc_delete_message">Nachricht löschen</string>
+    <string name="desc_delete_post">Beitrag löschen</string>
 
     <string name="minijuegos">Minispiele</string>
     <string name="progreso_diario">Täglicher Fortschritt</string>
-    <string name="game_conecta_palabras">Wörter verbinden</string>
+    <string name="game_conecta_palabras">Wörter Verbinden</string>
     <string name="game_escucha_repite">Hören &amp; Wiederholen</string>
     <string name="game_quiz_gramatica">Grammatik-Quiz</string>
-    <string name="game_crea_historias">Geschichten erstellen</string>
-    <string name="game_memoria_visual">Memory-Spiel</string>
-    <string name="game_desafio_pronunciacion">Aussprache-Herausforderung</string>
+    <string name="game_crea_historias">Geschichten Bauen</string>
+    <string name="game_memoria_visual">Visuelles Gedächtnis</string>
+    <string name="game_desafio_pronunciacion">Aussprache-Challenge</string>
     <string name="logros">Erfolge</string>
-    <string name="game_desafio_diario">Tägliche Herausforderung starten</string>
-    <string name="inicio_escribe_palabra_hint">Ein Wort eingeben</string>
+    <string name="game_desafio_diario">Tageschallenge starten</string>
+    <string name="inicio_escribe_palabra_hint">Schreibe ein Wort</string>
     <string name="inicio_guardar">Speichern</string>
+
+    <string name="word_match_progress_fmt">Level Einfach: %1$d/%2$d</string>
+    <string name="leccion_etapas_fmt">Stufen: %1$d / %2$d</string>
+
+    <string name="game_listening_titulo">Hören &amp; Wiederholen</string>
+    <string name="listening_escuchar">Hören</string>
+    <string name="listening_repetir">Wiederholen</string>
+    <string name="listening_siguiente">Weiter</string>
+    <string name="hablar_presiona_y_habla">Drücke das Mikrofon und sprich</string>
+    <string name="error_microfono">Fehler beim Initialisieren des Mikrofons</string>
+
+    <string name="game_story_titulo">Geschichten Bauen</string>
+    <string name="story_instruccion">Vervollständige den Satz mit dem richtigen Wort.</string>
+    <string name="story_comprobar">Prüfen</string>
+    <string name="story_siguiente">Nächster Satz</string>
+    <string name="story_correcto">Richtig! Die Geschichte ergibt Sinn.</string>
+    <string name="story_incorrecto">Hmm, das klingt nicht richtig. Versuch es nochmal.</string>
+    <string name="story_seleccion">Auswählen...</string>
+
+    <string name="inicio_voz_iot">IoT Sprachsteuerung</string>
+    <string name="voz_iot_titulo">Hausbefehle</string>
+    <string name="voz_iot_instruccion">Tippe auf das Mikro und sage:\n"Licht an", "Licht aus", "Tür öffnen"</string>
+    <string name="voz_iot_escuchando">Zuhören...</string>
+    <string name="voz_iot_enviado">Befehl gesendet: %1$s</string>
+    <string name="voz_iot_error">Ich habe dich nicht verstanden, versuch es nochmal.</string>
+    <string name="voz_btn_hablar">Tippen zum Sprechen</string>
+    <string name="voz_status_waiting">Warte auf Befehl...</string>
 
     <string name="registro_titulo">Benutzerregistrierung</string>
     <string name="registro_nombre_completo">Vollständiger Name</string>
@@ -65,39 +101,21 @@
     <string name="registro_contrasena">Passwort</string>
     <string name="registro_confirmar_contrasena">Passwort bestätigen</string>
     <string name="registro_boton_registrar">Registrieren</string>
-    <string name="registro_ir_a_login">Haben Sie bereits ein Konto? Anmelden</string>
-    <string name="registro_error_obligatorios">Name, Benutzername, E-Mail und Passwort sind erforderlich</string>
+    <string name="registro_ir_a_login">Hast du schon ein Konto? Anmelden</string>
+    <string name="registro_error_obligatorios">Name, Benutzer, E-Mail und Passwort sind erforderlich</string>
     <string name="registro_error_contrasena_corta">Das Passwort muss mindestens 6 Zeichen lang sein</string>
-    <string name="registro_error_contrasenas_no_coinciden">Die Passwörter stimmen nicht überein</string>
+    <string name="registro_error_contrasenas_no_coinciden">Passwörter stimmen nicht überein</string>
     <string name="registro_error_id">Fehler beim Abrufen der Benutzer-ID.</string>
     <string name="registro_exito">Konto erstellt und Daten gespeichert.</string>
-    <string name="registro_error_firestore">Fehler beim Speichern der Daten: %1$s</string>
-    <string name="registro_error_auth">Registrierung fehlgeschlagen: %1$s</string>
+    <string name="registro_error_firestore">Fehler beim Speichern: %1$s</string>
+    <string name="registro_error_auth">Registrierungsfehler: %1$s</string>
 
-    <string name="language_picker_title">Sprache auswählen</string>
-    <string name="error_palabra_vacia">Das Wort darf nicht leer sein</string>
-
-    <string name="game_listening_titulo">Hören &amp; Wiederholen</string>
-    <string name="listening_escuchar">Zuhören</string>
-    <string name="listening_repetir">Wiederholen</string>
-    <string name="listening_siguiente">Weiter</string>
-    <string name="hablar_presiona_y_habla">Drücke das Mikrofon und sprich</string>
-    <string name="error_microfono">Fehler beim Starten des Mikrofons</string>
-
-    <string name="game_story_titulo">Geschichten erstellen</string>
-    <string name="story_instruccion">Vervollständige den Satz mit dem richtigen Wort.</string>
-    <string name="story_comprobar">Überprüfen</string>
-    <string name="story_siguiente">Nächster Satz</string>
-    <string name="story_correcto">Richtig! Die Geschichte ergibt Sinn.</string>
-    <string name="story_incorrecto">Hmm, das klingt nicht richtig. Versuch es nochmal.</string>
-    <string name="story_seleccion">Auswählen...</string>
-
-    <string name="inicio_voz_iot">IoT-Sprachsteuerung</string>
-    <string name="voz_iot_titulo">Heimbefehle</string>
-    <string name="voz_iot_instruccion">Tippe auf das Mikrofon und sage:\n"Licht an", "Licht aus", "Tür öffnen"</string>
-    <string name="voz_iot_escuchando">Zuhören...</string>
-    <string name="voz_iot_enviado">Befehl gesendet: %1$s</string>
-    <string name="voz_iot_error">Nicht verstanden, versuche es erneut.</string>
+    <string name="chat_msg_received_stub">Dies ist eine empfangene Nachricht.</string>
+    <string name="chat_msg_sent_stub">Dies ist eine von mir gesendete Nachricht.</string>
+    <string name="user_name_stub">Benutzername</string>
+    <string name="post_author_stub">Name des Autors</string>
+    <string name="post_content_stub">Dies ist der Inhalt des Beitrags.</string>
+    <string name="post_time_stub">10/11 14:30</string>
 
     <string-array name="idiomas_tags">
         <item>#Spanisch</item>

@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import java.util.Locale
 import androidx.activity.viewModels
+import com.example.lingogo.LanguageManager
 import com.example.lingogo.R // <-- Asegúrate que este sea tu paquete de R
 
 class PronunciationChallengeActivity : AppCompatActivity() {
@@ -32,7 +33,7 @@ class PronunciationChallengeActivity : AppCompatActivity() {
     // --- ¡NUEVO! Referencias para la barra de progreso ---
     private lateinit var progressText: TextView
     private lateinit var progressBar: ProgressBar
-    // --- FIN DE LO NUEVO ---
+
 
     private var speechRecognizer: SpeechRecognizer? = null
     private lateinit var speechRecognizerIntent: Intent
@@ -49,6 +50,10 @@ class PronunciationChallengeActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val prefs = getSharedPreferences("Ajustes", MODE_PRIVATE)
+        val idiomaGuardado = prefs.getString("idioma_seleccionado", "es") ?: "es"
+        val themeId = LanguageManager.getThemeForLanguage(idiomaGuardado)
+        setTheme(themeId)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pronunciation_challenge)
 

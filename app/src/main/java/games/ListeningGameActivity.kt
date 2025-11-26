@@ -14,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.example.lingogo.LanguageManager
 import com.example.lingogo.R
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -42,6 +43,10 @@ class ListeningGameActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val prefs = getSharedPreferences("Ajustes", MODE_PRIVATE)
+        val idiomaGuardado = prefs.getString("idioma_seleccionado", "es") ?: "es"
+        val themeId = LanguageManager.getThemeForLanguage(idiomaGuardado)
+        setTheme(themeId)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_listening_game)
 

@@ -1,16 +1,15 @@
 <resources>
     <string name="app_name">LingoGo</string>
     <string name="lingogo">LingoGo</string>
-    <string name="default_web_client_id" translatable="false">"820060246747-8mh0mrb2807qjc73h0l8ferbuen7vmku.apps.googleusercontent.com"</string>
 
     <string name="tu_profesor_de_ingles_de_bolsillo">Your pocket English teacher</string>
     <string name="correo_electr_nico">Email</string>
     <string name="contrase_a">Password</string>
-    <string name="iniciar_sesi_n">Sign In</string>
-    <string name="no_tienes_cuenta_reg_strate_aqu">Don\'t have an account? Register here</string>
-    <string name="cerrar_sesi_n">Sign Out</string>
+    <string name="iniciar_sesi_n">Log In</string>
+    <string name="no_tienes_cuenta_reg_strate_aqu">Don\'t have an account? Sign up here</string>
+    <string name="cerrar_sesi_n">Log Out</string>
 
-    <string name="inicio_hola_estudiante">Hello, student!</string>
+    <string name="inicio_hola_estudiante">Hello, student</string>
     <string name="inicio_bienvenida_usuario">Welcome, %1$s!</string>
     <string name="inicio_listo_aprender">Ready to learn?</string>
     <string name="inicio_progreso_hoy">Your progress today</string>
@@ -18,7 +17,7 @@
     <string name="inicio_puntos">Points</string>
     <string name="inicio_continuar_leccion">Continue lesson</string>
     <string name="inicio_leccion_detalle">Lesson 5: Simple Present</string>
-    <string name="inicio_leccion_progreso">Progress: 75% complete</string>
+    <string name="inicio_leccion_progreso">Progress: 75% completed</string>
     <string name="inicio_mi_progreso">My Progress</string>
     <string name="inicio_perfil">Profile</string>
     <string name="inicio_favoritas">Favorites</string>
@@ -27,9 +26,12 @@
     <string name="inicio_ajustes">Settings</string>
     <string name="inicio_tip_del_dia">Tip of the day: Practice 5 minutes!</string>
 
+    <string name="splash_loading">Preparing your learning path...</string>
+    <string name="splash_version">v2.0</string>
+
     <string name="configuraci_n">⚙️ Settings</string>
     <string name="config_categoria_general">General</string>
-    <string name="idioma_de_la_aplicaci_n">Application Language</string>
+    <string name="idioma_de_la_aplicaci_n">App Language</string>
     <string name="config_idioma_subtitulo">Select your preferred language</string>
     <string name="config_categoria_apariencia">Appearance &amp; Sound</string>
     <string name="notificaciones">Notifications</string>
@@ -37,53 +39,40 @@
     <string name="tema">Theme</string>
     <string name="claro">Light</string>
     <string name="oscuro">Dark</string>
+    <string name="language_picker_title">Select a language</string>
 
     <string name="favoritas_titulo">My Favorite Words</string>
-    <string name="favoritas_no_hay">You don\'t have any favorite words yet</string>
+    <string name="favoritas_no_hay">You don\'t have favorite words yet</string>
     <string name="favoritas_borrar">Delete word</string>
+    <string name="error_palabra_vacia">The word cannot be empty</string>
+
+    <string name="btn_comenzar">Start</string>
+    <string name="desc_flag">Language flag</string>
+    <string name="desc_delete_message">Delete message</string>
+    <string name="desc_delete_post">Delete post</string>
 
     <string name="minijuegos">Minigames</string>
     <string name="progreso_diario">Daily Progress</string>
-    <string name="game_conecta_palabras">Word Match</string>
+    <string name="game_conecta_palabras">Connect Words</string>
     <string name="game_escucha_repite">Listen &amp; Repeat</string>
     <string name="game_quiz_gramatica">Grammar Quiz</string>
-    <string name="game_crea_historias">Story Creator</string>
+    <string name="game_crea_historias">Story Builder</string>
     <string name="game_memoria_visual">Visual Memory</string>
     <string name="game_desafio_pronunciacion">Pronunciation Challenge</string>
     <string name="logros">Achievements</string>
     <string name="game_desafio_diario">Start daily challenge</string>
-
     <string name="inicio_escribe_palabra_hint">Type a word</string>
     <string name="inicio_guardar">Save</string>
 
-    <string name="registro_titulo">User Registration</string>
-    <string name="registro_nombre_completo">Full name</string>
-    <string name="registro_nombre_usuario">Username</string>
-    <string name="registro_telefono">Phone number</string>
-    <string name="registro_fecha_nacimiento">Date of birth (DD/MM/YYYY)</string>
-    <string name="registro_direccion">Address</string>
-    <string name="registro_genero">Gender</string>
-    <string name="registro_contrasena">Password</string>
-    <string name="registro_confirmar_contrasena">Confirm password</string>
-    <string name="registro_boton_registrar">Register</string>
-    <string name="registro_ir_a_login">Already have an account? Sign in</string>
-    <string name="registro_error_obligatorios">Name, Username, Email and Password are required</string>
-    <string name="registro_error_contrasena_corta">Password must be at least 6 characters long</string>
-    <string name="registro_error_contrasenas_no_coinciden">Passwords do not match</string>
-    <string name="registro_error_id">Error getting user ID.</string>
-    <string name="registro_exito">Account created and data saved.</string>
-    <string name="registro_error_firestore">Error saving data: %1$s</string>
-    <string name="registro_error_auth">Registration failed: %1$s</string>
-
-    <string name="language_picker_title">Select a language</string>
-    <string name="error_palabra_vacia">Word cannot be empty</string>
+    <string name="word_match_progress_fmt">Level Easy: %1$d/%2$d</string>
+    <string name="leccion_etapas_fmt">Stages: %1$d / %2$d</string>
 
     <string name="game_listening_titulo">Listen &amp; Repeat</string>
     <string name="listening_escuchar">Listen</string>
     <string name="listening_repetir">Repeat</string>
     <string name="listening_siguiente">Next</string>
-    <string name="hablar_presiona_y_habla">Press the mic and speak</string>
-    <string name="error_microfono">Error starting microphone</string>
+    <string name="hablar_presiona_y_habla">Press microphone and speak</string>
+    <string name="error_microfono">Error initializing microphone</string>
 
     <string name="game_story_titulo">Story Builder</string>
     <string name="story_instruccion">Complete the sentence with the correct word.</string>
@@ -98,7 +87,35 @@
     <string name="voz_iot_instruccion">Tap the mic and say:\n"Turn on light", "Turn off light", "Open door"</string>
     <string name="voz_iot_escuchando">Listening...</string>
     <string name="voz_iot_enviado">Command sent: %1$s</string>
-    <string name="voz_iot_error">Didn\'t understand, try again.</string>
+    <string name="voz_iot_error">I didn\'t understand, try again.</string>
+    <string name="voz_btn_hablar">Tap to speak</string>
+    <string name="voz_status_waiting">Waiting for command...</string>
+
+    <string name="registro_titulo">User Registration</string>
+    <string name="registro_nombre_completo">Full name</string>
+    <string name="registro_nombre_usuario">Username</string>
+    <string name="registro_telefono">Phone number</string>
+    <string name="registro_fecha_nacimiento">Date of birth (DD/MM/YYYY)</string>
+    <string name="registro_direccion">Address</string>
+    <string name="registro_genero">Gender</string>
+    <string name="registro_contrasena">Password</string>
+    <string name="registro_confirmar_contrasena">Confirm password</string>
+    <string name="registro_boton_registrar">Register</string>
+    <string name="registro_ir_a_login">Already have an account? Log in</string>
+    <string name="registro_error_obligatorios">Name, User, Email and Password are required</string>
+    <string name="registro_error_contrasena_corta">Password must be at least 6 characters</string>
+    <string name="registro_error_contrasenas_no_coinciden">Passwords do not match</string>
+    <string name="registro_error_id">Error getting User ID.</string>
+    <string name="registro_exito">Account created and data saved.</string>
+    <string name="registro_error_firestore">Error saving data: %1$s</string>
+    <string name="registro_error_auth">Registration error: %1$s</string>
+
+    <string name="chat_msg_received_stub">This is a received message.</string>
+    <string name="chat_msg_sent_stub">This is a message sent by me.</string>
+    <string name="user_name_stub">Username</string>
+    <string name="post_author_stub">Author Name</string>
+    <string name="post_content_stub">This is the post content.</string>
+    <string name="post_time_stub">10/11 14:30</string>
 
     <string-array name="idiomas_tags">
         <item>#Spanish</item>

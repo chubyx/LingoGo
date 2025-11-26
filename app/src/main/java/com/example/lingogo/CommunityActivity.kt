@@ -1,28 +1,26 @@
 package com.example.lingogo
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue // Importante
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
 import android.widget.Toast
+import androidx.annotation.AttrRes // Importante
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-// --- ¡NUEVO! Imports para colores ---
-import androidx.core.content.ContextCompat
-import android.content.res.ColorStateList
-import android.graphics.Color
-// --- Fin de Imports ---
+import com.google.android.material.button.MaterialButton // Importante: Usamos MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.Query
 
 class CommunityActivity : AppCompatActivity() {
 
@@ -33,49 +31,51 @@ class CommunityActivity : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
     private var currentUserId: String = ""
 
-    // Vistas (de tu nuevo XML)
+    // Vistas
     private lateinit var toolbar: Toolbar
-    private lateinit var btnTabChats: Button
-    private lateinit var btnTabGrupos: Button
-    private lateinit var btnTabForo: Button
+    // CAMBIO: Usamos MaterialButton para poder controlar el borde (stroke)
+    private lateinit var btnTabChats: MaterialButton
+    private lateinit var btnTabGrupos: MaterialButton
+    private lateinit var btnTabForo: MaterialButton
     private lateinit var fabCrearPost: FloatingActionButton
 
-    // RecyclerView (para el Foro)
+    // RecyclerViews
     private lateinit var rvPosts: RecyclerView
     private lateinit var postAdapter: PostAdapter
     private val postList = mutableListOf<Post>()
 
-    // RecyclerView (para los Chats)
     private lateinit var rvChatRooms: RecyclerView
     private lateinit var chatRoomAdapter: ChatRoomAdapter
     private val chatRoomList = mutableListOf<ChatRoom>()
 
-    // RecyclerView (para los Grupos)
     private lateinit var rvGroupRooms: RecyclerView
     private lateinit var groupAdapter: GroupAdapter
     private val groupList = mutableListOf<Group>()
 
-    // Listeners de Firestore
+    // Listeners
     private var postsListener: ListenerRegistration? = null
     private var groupsListener: ListenerRegistration? = null
     private var chatRoomsListener: ListenerRegistration? = null
 
-    // --- ¡NUEVO! Variable para recordar la pestaña ---
-    // (Por defecto, empezamos en el Foro)
+    // Pestaña actual
     private var currentTabId: Int = R.id.btnTabForo
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // 1. APLICAR TEMA (Dinámico)
+        val prefs = getSharedPreferences("Ajustes", MODE_PRIVATE)
+        val idiomaGuardado = prefs.getString("idioma_seleccionado", "es") ?: "es"
+        val themeId = LanguageManager.getThemeForLanguage(idiomaGuardado)
+        setTheme(themeId)
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_comunidad)
 
-        // Inicializar Firebase
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
-        // Configurar Toolbar
         toolbar = findViewById(R.id.toolbarCommunity)
         setSupportActionBar(toolbar)
-        supportActionBar?.title = "Comunidad LingoGo"
+        supportActionBar?.title = getString(R.string.inicio_comunidad) // Usa el string traducible si lo tienes
 
         // Enlazar Vistas
         btnTabChats = findViewById(R.id.btnTabChats)
@@ -83,14 +83,13 @@ class CommunityActivity : AppCompatActivity() {
         btnTabForo = findViewById(R.id.btnTabForo)
         fabCrearPost = findViewById(R.id.fabCrearPost)
 
-        rvPosts = findViewById(R.id.rvPosts) // Para el Foro
-        rvChatRooms = findViewById(R.id.rvChatRooms) // Para los Chats
-        rvGroupRooms = findViewById(R.id.rvGroupRooms) // ¡NUEVO!
+        rvPosts = findViewById(R.id.rvPosts)
+        rvChatRooms = findViewById(R.id.rvChatRooms)
+        rvGroupRooms = findViewById(R.id.rvGroupRooms)
 
         setupTabListeners()
 
         fabCrearPost.setOnClickListener {
-            // Verificamos el ID aquí para evitar la "condición de carrera"
             val userId = auth.currentUser?.uid
             if (userId.isNullOrEmpty()) {
                 irALogin()
@@ -102,20 +101,49 @@ class CommunityActivity : AppCompatActivity() {
         }
     }
 
+    // --- FUNCIÓN AUXILIAR PARA OBTENER COLOR DEL TEMA ---
+    private fun getThemeColor(@AttrRes attrResId: Int): Int {
+        val typedValue = TypedValue()
+        theme.resolveAttribute(attrResId, typedValue, true)
+        return typedValue.data
+    }
+
+    // --- FUNCIÓN PARA ACTUALIZAR COLORES DE LOS TABS ---
+    private fun updateTabsColors(activeBtn: MaterialButton) {
+        // Obtenemos los colores del tema actual (Azul, Rojo, Verde...)
+        val colorPrimary = getThemeColor(com.google.android.material.R.attr.colorPrimary)
+        val colorOnPrimary = getThemeColor(com.google.android.material.R.attr.colorOnPrimary)
+        val colorSurface = getThemeColor(com.google.android.material.R.attr.colorSurface)
+
+        val buttons = listOf(btnTabChats, btnTabGrupos, btnTabForo)
+
+        for (btn in buttons) {
+            if (btn == activeBtn) {
+                // ESTILO ACTIVO: Fondo de color, texto blanco/negro
+                btn.backgroundTintList = ColorStateList.valueOf(colorPrimary)
+                btn.setTextColor(colorOnPrimary)
+                btn.strokeWidth = 0
+            } else {
+                // ESTILO INACTIVO: Fondo superficie, texto y borde de color
+                btn.backgroundTintList = ColorStateList.valueOf(colorSurface)
+                btn.setTextColor(colorPrimary)
+                btn.setStrokeColor(ColorStateList.valueOf(colorPrimary))
+                btn.strokeWidth = 3 // Grosor del borde
+            }
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        // Infla el menú (añade ítems a la barra de acción)
         menuInflater.inflate(R.menu.community_menu, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Maneja los clics en los ítems del menú
         return when (item.itemId) {
             R.id.menu_buscar_usuarios -> {
                 val userId = auth.currentUser?.uid
-                if (userId.isNullOrEmpty()) {
-                    irALogin()
-                } else {
+                if (userId.isNullOrEmpty()) irALogin()
+                else {
                     val intent = Intent(this, UserListActivity::class.java)
                     intent.putExtra("USER_ID", userId)
                     startActivity(intent)
@@ -124,12 +152,8 @@ class CommunityActivity : AppCompatActivity() {
             }
             R.id.menu_crear_grupo -> {
                 val userId = auth.currentUser?.uid
-                if (userId.isNullOrEmpty()) {
-                    irALogin()
-                } else {
-                    val intent = Intent(this, CreateGroupActivity::class.java)
-                    startActivity(intent)
-                }
+                if (userId.isNullOrEmpty()) irALogin()
+                else startActivity(Intent(this, CreateGroupActivity::class.java))
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -143,20 +167,16 @@ class CommunityActivity : AppCompatActivity() {
             irALogin()
         } else {
             currentUserId = currentUser.uid
-
             setupPostRecyclerView()
             setupChatRoomRecyclerView()
             setupGroupRecyclerView()
 
-            // --- ¡CAMBIO CLAVE! ---
-            // Restaurar la pestaña que estaba activa en lugar de
-            // llamar siempre a mostrarPestañaForo()
+            // Restaurar pestaña activa
             when (currentTabId) {
                 R.id.btnTabChats -> mostrarPestañaChats()
                 R.id.btnTabGrupos -> mostrarPestañaGrupos()
-                else -> mostrarPestañaForo() // 'else' incluye R.id.btnTabForo (por defecto)
+                else -> mostrarPestañaForo()
             }
-            // --- FIN DEL CAMBIO ---
         }
     }
 
@@ -165,15 +185,11 @@ class CommunityActivity : AppCompatActivity() {
             postList,
             currentUserId,
             { post ->
-                // Acción de Clic en un Post: Abrir Detalle
                 val intent = Intent(this, DetallePostActivity::class.java)
                 intent.putExtra("POST_ID", post.id)
                 startActivity(intent)
             },
-            { post ->
-                // Acción de Clic en Borrar Post
-                showDeleteConfirmationDialog(post)
-            }
+            { post -> showDeleteConfirmationDialog(post) }
         )
         rvPosts.adapter = postAdapter
         rvPosts.layoutManager = LinearLayoutManager(this)
@@ -181,7 +197,6 @@ class CommunityActivity : AppCompatActivity() {
 
     private fun setupChatRoomRecyclerView() {
         chatRoomAdapter = ChatRoomAdapter(chatRoomList) { chatRoom ->
-            // Al hacer clic en una sala, abrir ChatActivity
             val intent = Intent(this, ChatActivity::class.java)
             intent.putExtra("USER_ID_OTRO", chatRoom.otherUserId)
             intent.putExtra("USER_NOMBRE_OTRO", chatRoom.otherUserName)
@@ -193,7 +208,6 @@ class CommunityActivity : AppCompatActivity() {
 
     private fun setupGroupRecyclerView() {
         groupAdapter = GroupAdapter(groupList) { group ->
-            // Al hacer clic en un grupo, abrir GroupChatActivity
             val intent = Intent(this, GroupChatActivity::class.java)
             intent.putExtra("GROUP_ID", group.id)
             intent.putExtra("GROUP_NAME", group.nombre)
@@ -206,40 +220,25 @@ class CommunityActivity : AppCompatActivity() {
     private fun showDeleteConfirmationDialog(post: Post) {
         AlertDialog.Builder(this)
             .setTitle("Borrar Post")
-            .setMessage("¿Estás seguro de que quieres borrar este post? Esta acción no se puede deshacer.")
+            .setMessage("¿Estás seguro de que quieres borrar este post?")
             .setIcon(android.R.drawable.ic_dialog_alert)
-            .setPositiveButton("Sí, borrar") { _, _ ->
-                deletePostFromFirestore(post)
-            }
+            .setPositiveButton("Sí, borrar") { _, _ -> deletePostFromFirestore(post) }
             .setNegativeButton("No, cancelar", null)
             .show()
     }
 
     private fun deletePostFromFirestore(post: Post) {
         db.collection("posts").document(post.id).delete()
-            .addOnSuccessListener {
-                Toast.makeText(this, "Post eliminado", Toast.LENGTH_SHORT).show()
-                // El SnapshotListener actualizará la lista automáticamente.
-            }
-            .addOnFailureListener { e ->
-                Toast.makeText(this, "Error al borrar: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
+            .addOnSuccessListener { Toast.makeText(this, "Post eliminado", Toast.LENGTH_SHORT).show() }
+            .addOnFailureListener { e -> Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show() }
     }
 
     private fun setupTabListeners() {
-        btnTabChats.setOnClickListener {
-            mostrarPestañaChats()
-        }
-        btnTabGrupos.setOnClickListener {
-            mostrarPestañaGrupos()
-        }
-        btnTabForo.setOnClickListener {
-            mostrarPestañaForo()
-        }
+        btnTabChats.setOnClickListener { mostrarPestañaChats() }
+        btnTabGrupos.setOnClickListener { mostrarPestañaGrupos() }
+        btnTabForo.setOnClickListener { mostrarPestañaForo() }
     }
 
-
-    // --- ¡FUNCIÓN MODIFICADA! ---
     private fun mostrarPestañaForo() {
         Log.d(TAG, "Mostrando pestaña Foro")
         rvChatRooms.visibility = View.GONE
@@ -250,25 +249,14 @@ class CommunityActivity : AppCompatActivity() {
         chatRoomsListener?.remove()
         groupsListener?.remove()
 
-        // --- ¡NUEVO! Guardamos la pestaña actual ---
         currentTabId = R.id.btnTabForo
 
-        // (Lógica de colores sin cambios)
-        val colorClaro = ColorStateList.valueOf(Color.parseColor("#FAD169"))
-        val colorNaranja = ContextCompat.getColorStateList(this, R.color.naranja)
-        val colorTextoNaranja = ContextCompat.getColor(this, R.color.naranja)
-
-        btnTabForo.backgroundTintList = colorNaranja
-        btnTabForo.setTextColor(Color.WHITE)
-        btnTabChats.backgroundTintList = colorClaro
-        btnTabChats.setTextColor(colorTextoNaranja)
-        btnTabGrupos.backgroundTintList = colorClaro
-        btnTabGrupos.setTextColor(colorTextoNaranja)
+        // Actualizar colores dinámicamente
+        updateTabsColors(btnTabForo)
 
         cargarPostsForo()
     }
 
-    // --- ¡FUNCIÓN MODIFICADA! ---
     private fun mostrarPestañaChats() {
         Log.d(TAG, "Mostrando pestaña Chats")
         rvPosts.visibility = View.GONE
@@ -279,25 +267,14 @@ class CommunityActivity : AppCompatActivity() {
         postsListener?.remove()
         groupsListener?.remove()
 
-        // --- ¡NUEVO! Guardamos la pestaña actual ---
         currentTabId = R.id.btnTabChats
 
-        // (Lógica de colores sin cambios)
-        val colorClaro = ColorStateList.valueOf(Color.parseColor("#FAD169"))
-        val colorNaranja = ContextCompat.getColorStateList(this, R.color.naranja)
-        val colorTextoNaranja = ContextCompat.getColor(this, R.color.naranja)
-
-        btnTabChats.backgroundTintList = colorNaranja
-        btnTabChats.setTextColor(Color.WHITE)
-        btnTabForo.backgroundTintList = colorClaro
-        btnTabForo.setTextColor(colorTextoNaranja)
-        btnTabGrupos.backgroundTintList = colorClaro
-        btnTabGrupos.setTextColor(colorTextoNaranja)
+        // Actualizar colores dinámicamente
+        updateTabsColors(btnTabChats)
 
         cargarChatRooms()
     }
 
-    // --- ¡FUNCIÓN MODIFICADA! ---
     private fun mostrarPestañaGrupos() {
         Log.d(TAG, "Mostrando pestaña Grupos")
         rvPosts.visibility = View.GONE
@@ -308,38 +285,26 @@ class CommunityActivity : AppCompatActivity() {
         postsListener?.remove()
         chatRoomsListener?.remove()
 
-        // --- ¡NUEVO! Guardamos la pestaña actual ---
         currentTabId = R.id.btnTabGrupos
 
-        // (Lógica de colores sin cambios)
-        val colorClaro = ColorStateList.valueOf(Color.parseColor("#FAD169"))
-        val colorNaranja = ContextCompat.getColorStateList(this, R.color.naranja)
-        val colorTextoNaranja = ContextCompat.getColor(this, R.color.naranja)
-
-        btnTabGrupos.backgroundTintList = colorNaranja
-        btnTabGrupos.setTextColor(Color.WHITE)
-        btnTabForo.backgroundTintList = colorClaro
-        btnTabForo.setTextColor(colorTextoNaranja)
-        btnTabChats.backgroundTintList = colorClaro
-        btnTabChats.setTextColor(colorTextoNaranja)
+        // Actualizar colores dinámicamente
+        updateTabsColors(btnTabGrupos)
 
         cargarGrupos()
     }
 
     private fun cargarPostsForo() {
         if (currentUserId.isEmpty()) return
-        // Escucha en tiempo real (addSnapshotListener)
-        db.collection("posts")
+        postsListener = db.collection("posts")
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshots, e ->
-                if (e != null) { Log.w(TAG, "Error al escuchar posts", e); return@addSnapshotListener }
+                if (e != null) { Log.w(TAG, "Error posts", e); return@addSnapshotListener }
                 if (snapshots != null) {
-                    Log.d(TAG, "Posts del foro recibidos: ${snapshots.size()}");
                     postList.clear()
-                    for (document in snapshots.documents) {
-                        val post = document.toObject(Post::class.java)
+                    for (doc in snapshots.documents) {
+                        val post = doc.toObject(Post::class.java)
                         if (post != null) {
-                            post.id = document.id // Asignamos el ID del documento
+                            post.id = doc.id
                             postList.add(post)
                         }
                     }
@@ -350,25 +315,16 @@ class CommunityActivity : AppCompatActivity() {
 
     private fun cargarGrupos() {
         if (currentUserId.isEmpty()) return
-
-        // Cargamos TODOS los grupos
-        db.collection("group_rooms")
+        groupsListener = db.collection("group_rooms")
             .orderBy("lastActivity", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshots, e ->
-                if (e != null) {
-                    Log.w(TAG, "Error al escuchar grupos", e)
-                    // (Si falla por índice, ver Logcat y crear el índice)
-                    Toast.makeText(this, "Error al cargar grupos", Toast.LENGTH_SHORT).show()
-                    return@addSnapshotListener
-                }
-
+                if (e != null) { Log.w(TAG, "Error grupos", e); return@addSnapshotListener }
                 if (snapshots != null) {
-                    Log.d(TAG, "Grupos encontrados: ${snapshots.size()}");
                     groupList.clear()
-                    for (document in snapshots.documents) {
-                        val group = document.toObject(Group::class.java)
+                    for (doc in snapshots.documents) {
+                        val group = doc.toObject(Group::class.java)
                         if (group != null) {
-                            group.id = document.id
+                            group.id = doc.id
                             groupList.add(group)
                         }
                     }
@@ -379,61 +335,38 @@ class CommunityActivity : AppCompatActivity() {
 
     private fun cargarChatRooms() {
         if (currentUserId.isEmpty()) return
-
-        // 1. Consultar las salas de chat donde soy participante
         db.collection("chat_rooms")
             .whereArrayContains("participants", currentUserId)
             .get()
             .addOnSuccessListener { snapshots ->
-                if (snapshots == null) {
-                    Log.d(TAG, "No se encontraron salas de chat."); return@addOnSuccessListener
-                }
-
+                if (snapshots == null) return@addOnSuccessListener
                 chatRoomList.clear()
-                Log.d(TAG, "Salas de chat encontradas: ${snapshots.size()}");
-
-                // 2. Por cada sala, buscar los datos del OTRO usuario
                 for (document in snapshots.documents) {
                     val participants = document.get("participants") as? List<String>
                     if (participants == null || participants.size < 2) continue
+                    val otherUserId = participants.find { it != currentUserId } ?: continue
 
-                    // Encuentra el ID del otro usuario
-                    val otherUserId = participants.find { it != currentUserId }
-                    if (otherUserId == null) continue
-
-                    // 3. Buscar el perfil del otro usuario en la colección "users"
                     db.collection("users").document(otherUserId).get()
                         .addOnSuccessListener { userDoc ->
-
-                            // 4. Construir el objeto ChatRoom con los datos
                             val chatRoom = ChatRoom(
                                 id = document.id,
                                 otherUserId = otherUserId,
                                 lastActivity = document.getTimestamp("lastActivity")?.toDate(),
                                 lastMessage = document.getString("lastMessage") ?: "..."
                             )
-
                             if (userDoc != null && userDoc.exists()) {
                                 chatRoom.otherUserName = userDoc.getString("nombre") ?: "Usuario"
                                 chatRoom.otherUserPhotoUrl = userDoc.getString("fotoUrl") ?: ""
                             } else {
                                 chatRoom.otherUserName = "Usuario Desconocido"
                             }
-
                             chatRoomList.add(chatRoom)
-                            // (Ordenar manualmente)
                             chatRoomList.sortByDescending { it.lastActivity }
                             chatRoomAdapter.notifyDataSetChanged()
                         }
                 }
             }
-            .addOnFailureListener { e ->
-                Log.e(TAG, "Error al cargar salas de chat", e)
-                Toast.makeText(this, "Error al cargar chats", Toast.LENGTH_SHORT).show()
-            }
     }
-
-
 
     private fun irALogin() {
         val intent = Intent(this, MainActivity::class.java)
