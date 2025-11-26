@@ -20,4 +20,11 @@
         <item>Francés</item>
         <item>Alemán</item>
     </string-array>
+    <string-array name="idiomas_tags">
+        <item>#Español</item>
+        <item>#Inglés</item>
+        <item>#Francés</item>
+        <item>#Alemán</item>
+        <item>#Italiano</item>
+    </string-array>
 </resources>

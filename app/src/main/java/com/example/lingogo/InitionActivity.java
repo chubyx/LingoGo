@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 public class InitionActivity extends AppCompatActivity {
-    private CardView cardViewComunidad, cardViewConfig;
+    private CardView cardViewComunidad, cardViewConfig, cardGames, cardPerfil;
     @Override
 
     protected void onCreate(Bundle savedInstanceState){
@@ -16,6 +16,8 @@ public class InitionActivity extends AppCompatActivity {
 
         cardViewComunidad = findViewById(R.id.cardComunidad);
         cardViewConfig = findViewById(R.id.cardConfiguracion);
+        cardGames = findViewById(R.id.cardGames);
+        cardPerfil = findViewById(R.id.cardPerfil);
 
         //Acción para presionar
         cardViewComunidad.setOnClickListener(view -> {
@@ -25,6 +27,15 @@ public class InitionActivity extends AppCompatActivity {
 
         cardViewConfig.setOnClickListener(view -> {
             Intent intent = new Intent(InitionActivity.this, ConfigActivity.class);
+            startActivity(intent);
+        });
+
+        cardGames.setOnClickListener(view ->{
+            Intent intent = new Intent(InitionActivity.this, GamesActivity.class);
+            startActivity(intent);
+        });
+        cardPerfil.setOnClickListener(view ->{
+            Intent intent = new Intent(InitionActivity.this, PerfilActivity.class);
             startActivity(intent);
         });
     }

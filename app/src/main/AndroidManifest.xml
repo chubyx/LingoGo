@@ -22,6 +22,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".ConfigActivity"/>
+        <activity android:name=".InitionActivity"/>
+        <activity android:name=".CommunityActivity"/>
+        <activity android:name=".GamesActivity"/>
+        <activity android:name=".PerfilActivity"/>
+        <activity android:name=".RegistroActivity"/>
+
     </application>
 
 </manifest>
