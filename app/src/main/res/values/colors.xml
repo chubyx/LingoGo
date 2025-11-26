@@ -22,5 +22,28 @@
     <color name="md_theme_light_surfaceVariant">#ECE1D9</color>
     <color name="md_theme_light_onSurfaceVariant">#4D4640</color>
     <color name="md_theme_light_outline">#7E766F</color>
+    <color name="lang_en_primary">#1976D2</color>
+    <color name="lang_en_container">#BBDEFB</color>
+
+    <color name="lang_fr_primary">#283593</color>
+    <color name="lang_fr_container">#C5CAE9</color>
+
+    <color name="lang_de_primary">#37474F</color>
+    <color name="lang_de_container">#CFD8DC</color>
+
+    <color name="lang_it_primary">#2E7D32</color>
+    <color name="lang_it_container">#C8E6C9</color>
+
+    <color name="lang_pt_primary">#FFC107</color>
+    <color name="lang_pt_container">#FFECB3</color>
+
+    <color name="lang_ja_primary">#D32F2F</color>
+    <color name="lang_ja_container">#FFCDD2</color>
+
+    <color name="lang_zh_primary">#B71C1C</color>
+    <color name="lang_zh_container">#FFEBEE</color>
+
+    <color name="lang_ru_primary">#0097A7</color>
+    <color name="lang_ru_container">#B2EBF2</color>
 
 </resources>

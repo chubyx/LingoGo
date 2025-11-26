@@ -47,6 +47,7 @@ class MessageAdapter(
      * en quién es el emisor (senderId) del mensaje.
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
+
         val layoutInflater = LayoutInflater.from(parent.context)
         val view: View
 

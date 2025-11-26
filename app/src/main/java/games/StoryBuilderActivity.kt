@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.example.lingogo.LanguageManager
 import com.example.lingogo.R
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
@@ -22,6 +23,10 @@ class StoryBuilderActivity : AppCompatActivity() {
     private lateinit var tvFeedback: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val prefs = getSharedPreferences("Ajustes", MODE_PRIVATE)
+        val idiomaGuardado = prefs.getString("idioma_seleccionado", "es") ?: "es"
+        val themeId = LanguageManager.getThemeForLanguage(idiomaGuardado)
+        setTheme(themeId)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_story_builder)
 

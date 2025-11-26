@@ -5,18 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F4F4F4"
+    android:background="?attr/colorSurface"
     tools:context=".UserListActivity">
 
-    <!-- Barra de Aplicación -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarUserList"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/naranja"
-        app:titleTextColor="@color/white" />
+        android:background="?attr/colorPrimary"
+        app:titleTextColor="?attr/colorOnPrimary"
+        app:navigationIconTint="?attr/colorOnPrimary" />
 
-    <!-- Lista de Usuarios -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvUserList"
         android:layout_width="match_parent"

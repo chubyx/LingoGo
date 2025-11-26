@@ -8,6 +8,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.example.lingogo.LanguageManager
 import com.example.lingogo.R
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -30,6 +31,10 @@ class WordMatchActivity : AppCompatActivity() {
     private var selectedBtnRight: MaterialButton? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val prefs = getSharedPreferences("Ajustes", MODE_PRIVATE)
+        val idiomaGuardado = prefs.getString("idioma_seleccionado", "es") ?: "es"
+        val themeId = LanguageManager.getThemeForLanguage(idiomaGuardado)
+        setTheme(themeId)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_word_match)
 

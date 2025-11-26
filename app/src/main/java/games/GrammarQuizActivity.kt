@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.example.lingogo.LanguageManager
 import com.example.lingogo.R // <-- Asegúrate que este sea tu paquete de R
 
 class GrammarQuizActivity : AppCompatActivity() {
@@ -32,6 +33,10 @@ class GrammarQuizActivity : AppCompatActivity() {
     private var colorNeutralText: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val prefs = getSharedPreferences("Ajustes", MODE_PRIVATE)
+        val idiomaGuardado = prefs.getString("idioma_seleccionado", "es") ?: "es"
+        val themeId = LanguageManager.getThemeForLanguage(idiomaGuardado)
+        setTheme(themeId)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_grammar_quiz)
 

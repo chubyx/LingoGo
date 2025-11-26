@@ -6,14 +6,11 @@
         android:id="@+id/menu_buscar_usuarios"
         android:title="Buscar Usuarios"
         android:icon="@android:drawable/ic_menu_search"
-        app:showAsAction="ifRoom"
-        app:tint="@color/white" />
+        app:showAsAction="ifRoom" />
 
-    <!-- ¡NUEVO! Botón para Crear Grupo -->
     <item
         android:id="@+id/menu_crear_grupo"
         android:title="Crear Grupo"
         android:icon="@android:drawable/ic_menu_add"
-        app:showAsAction="ifRoom"
-        app:tint="@color/white" />
+        app:showAsAction="ifRoom" />
 </menu>

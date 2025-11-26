@@ -11,9 +11,50 @@
         <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
         <item name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant</item>
         <item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant</item>
-
         <item name="colorOutline">@color/md_theme_light_outline</item>
     </style>
 
     <style name="Theme.LingoGo" parent="Base.Theme.LingoGo" />
+
+    <style name="Theme.LingoGo.English" parent="Theme.LingoGo">
+        <item name="colorPrimary">@color/lang_en_primary</item>
+        <item name="colorPrimaryContainer">@color/lang_en_container</item>
+    </style>
+
+    <style name="Theme.LingoGo.French" parent="Theme.LingoGo">
+        <item name="colorPrimary">@color/lang_fr_primary</item>
+        <item name="colorPrimaryContainer">@color/lang_fr_container</item>
+    </style>
+
+    <style name="Theme.LingoGo.German" parent="Theme.LingoGo">
+        <item name="colorPrimary">@color/lang_de_primary</item>
+        <item name="colorPrimaryContainer">@color/lang_de_container</item>
+    </style>
+
+    <style name="Theme.LingoGo.Italian" parent="Theme.LingoGo">
+        <item name="colorPrimary">@color/lang_it_primary</item>
+        <item name="colorPrimaryContainer">@color/lang_it_container</item>
+    </style>
+
+    <style name="Theme.LingoGo.Portuguese" parent="Theme.LingoGo">
+        <item name="colorPrimary">@color/lang_pt_primary</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimaryContainer">@color/lang_pt_container</item>
+    </style>
+
+    <style name="Theme.LingoGo.Japanese" parent="Theme.LingoGo">
+        <item name="colorPrimary">@color/lang_ja_primary</item>
+        <item name="colorPrimaryContainer">@color/lang_ja_container</item>
+    </style>
+
+    <style name="Theme.LingoGo.Chinese" parent="Theme.LingoGo">
+        <item name="colorPrimary">@color/lang_zh_primary</item>
+        <item name="colorPrimaryContainer">@color/lang_zh_container</item>
+    </style>
+
+    <style name="Theme.LingoGo.Russian" parent="Theme.LingoGo">
+        <item name="colorPrimary">@color/lang_ru_primary</item>
+        <item name="colorPrimaryContainer">@color/lang_ru_container</item>
+    </style>
+
 </resources>

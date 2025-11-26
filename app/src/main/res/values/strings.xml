@@ -10,7 +10,6 @@
     <string name="no_tienes_cuenta_reg_strate_aqu">¿No tienes cuenta? Regístrate aquí</string>
     <string name="cerrar_sesi_n">Cerrar Sesión</string>
 
-
     <string name="inicio_hola_estudiante">Hola, estudiante</string>
     <string name="inicio_bienvenida_usuario">¡Bienvenido, %1$s!</string>
     <string name="inicio_listo_aprender">¿Listo para aprender?</string>
@@ -28,6 +27,9 @@
     <string name="inicio_ajustes">Ajustes</string>
     <string name="inicio_tip_del_dia">Tip del día: ¡Practica 5 minutos!</string>
 
+    <string name="splash_loading">Preparando tu aprendizaje...</string>
+    <string name="splash_version">v2.0</string>
+
     <string name="configuraci_n">⚙️ Configuración</string>
     <string name="config_categoria_general">General</string>
     <string name="idioma_de_la_aplicaci_n">Idioma de la aplicación</string>
@@ -38,10 +40,17 @@
     <string name="tema">Tema</string>
     <string name="claro">Claro</string>
     <string name="oscuro">Oscuro</string>
+    <string name="language_picker_title">Selecciona un idioma</string>
 
     <string name="favoritas_titulo">Mis Palabras Favoritas</string>
     <string name="favoritas_no_hay">Aún no tienes palabras favoritas</string>
     <string name="favoritas_borrar">Borrar palabra</string>
+    <string name="error_palabra_vacia">La palabra no puede estar vacía</string>
+
+    <string name="btn_comenzar">Comenzar</string>
+    <string name="desc_flag">Bandera del idioma</string>
+    <string name="desc_delete_message">Borrar mensaje</string>
+    <string name="desc_delete_post">Borrar publicación</string>
 
     <string name="minijuegos">Minijuegos</string>
     <string name="progreso_diario">Progreso Diario</string>
@@ -53,10 +62,36 @@
     <string name="game_desafio_pronunciacion">Desafío Pronunciación</string>
     <string name="logros">Logros</string>
     <string name="game_desafio_diario">Comenzar desafío diario</string>
-
     <string name="inicio_escribe_palabra_hint">Escribe una palabra</string>
     <string name="inicio_guardar">Guardar</string>
-    <!-- Strings para RegistroActivity -->
+
+    <string name="word_match_progress_fmt">Nivel Easy: %1$d/%2$d</string>
+    <string name="leccion_etapas_fmt">Etapas: %1$d / %2$d</string>
+
+    <string name="game_listening_titulo">Escucha y Repite</string>
+    <string name="listening_escuchar">Escuchar</string>
+    <string name="listening_repetir">Repetir</string>
+    <string name="listening_siguiente">Siguiente</string>
+    <string name="hablar_presiona_y_habla">Presiona el micrófono y habla</string>
+    <string name="error_microfono">Error al iniciar micrófono</string>
+
+    <string name="game_story_titulo">Crea Historias</string>
+    <string name="story_instruccion">Completa la frase con la palabra correcta.</string>
+    <string name="story_comprobar">Comprobar</string>
+    <string name="story_siguiente">Siguiente Frase</string>
+    <string name="story_correcto">¡Correcto! La historia tiene sentido.</string>
+    <string name="story_incorrecto">Mmm, eso no suena bien. Intenta otra vez.</string>
+    <string name="story_seleccion">Selecciona...</string>
+
+    <string name="inicio_voz_iot">Control por Voz IoT</string>
+    <string name="voz_iot_titulo">Comandos de Casa</string>
+    <string name="voz_iot_instruccion">Toca el micrófono y di:\n"Encender luz", "Apagar luz", "Abrir puerta"</string>
+    <string name="voz_iot_escuchando">Escuchando...</string>
+    <string name="voz_iot_enviado">Comando enviado: %1$s</string>
+    <string name="voz_iot_error">No te entendí, intenta de nuevo.</string>
+    <string name="voz_btn_hablar">Toca para hablar</string>
+    <string name="voz_status_waiting">Esperando comando...</string>
+
     <string name="registro_titulo">Registro de Usuario</string>
     <string name="registro_nombre_completo">Nombre completo</string>
     <string name="registro_nombre_usuario">Nombre de usuario</string>
@@ -75,9 +110,13 @@
     <string name="registro_exito">Cuenta creada y datos guardados.</string>
     <string name="registro_error_firestore">Error al guardar datos: %1$s</string>
     <string name="registro_error_auth">Error en el registro: %1$s</string>
-    <string name="language_picker_title">Selecciona un idioma</string>
-    <string name="error_palabra_vacia">La palabra no puede estar vacía</string>
 
+    <string name="chat_msg_received_stub">Este es un mensaje recibido.</string>
+    <string name="chat_msg_sent_stub">Este es un mensaje enviado por mí.</string>
+    <string name="user_name_stub">Nombre del Usuario</string>
+    <string name="post_author_stub">Nombre del Autor</string>
+    <string name="post_content_stub">Este es el contenido del post.</string>
+    <string name="post_time_stub">10/11 14:30</string>
 
     <string-array name="idiomas_tags">
         <item>#Español</item>
@@ -86,24 +125,4 @@
         <item>#Alemán</item>
         <item>#Italiano</item>
     </string-array>
-
-<string name="game_listening_titulo">Escucha y Repite</string>
-<string name="listening_escuchar">Escuchar</string>
-<string name="listening_repetir">Repetir</string>
-<string name="listening_siguiente">Siguiente</string>
-<string name="hablar_presiona_y_habla">Presiona el micrófono y habla</string>
-<string name="error_microfono">Error al iniciar micrófono</string>
-    <string name="game_story_titulo">Crea Historias</string>
-    <string name="story_instruccion">Completa la frase con la palabra correcta.</string>
-    <string name="story_comprobar">Comprobar</string>
-    <string name="story_siguiente">Siguiente Frase</string>
-    <string name="story_correcto">¡Correcto! La historia tiene sentido.</string>
-    <string name="story_incorrecto">Mmm, eso no suena bien. Intenta otra vez.</string>
-    <string name="story_seleccion">Selecciona...</string>
-    <string name="inicio_voz_iot">Control por Voz IoT</string>
-    <string name="voz_iot_titulo">Comandos de Casa</string>
-    <string name="voz_iot_instruccion">Toca el micrófono y di:\n"Encender luz", "Apagar luz", "Abrir puerta"</string>
-    <string name="voz_iot_escuchando">Escuchando...</string>
-    <string name="voz_iot_enviado">Comando enviado: %1$s</string>
-    <string name="voz_iot_error">No te entendí, intenta de nuevo.</string>
 </resources>
