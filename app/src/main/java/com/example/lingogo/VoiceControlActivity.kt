@@ -27,7 +27,7 @@ class VoiceControlActivity : AppCompatActivity() {
     private lateinit var dbRealtime: DatabaseReference
 
     private var speechRecognizer: SpeechRecognizer? = null
-    private var currentLanguageId: String = "es" // Idioma actual de la app
+    private var currentLanguageId: String = "es" 
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -40,23 +40,24 @@ class VoiceControlActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // 1. Aplicar Tema y obtener idioma
+        // 1. Aplicar Tema y obtener idioma guardado
         val prefs = getSharedPreferences("Ajustes", MODE_PRIVATE)
         currentLanguageId = prefs.getString("idioma_seleccionado", "es") ?: "es"
+        
         val themeId = LanguageManager.getThemeForLanguage(currentLanguageId)
         setTheme(themeId)
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_voice_control)
 
-        // 2. Inicializar Firebase Realtime Database
+        // 2. Inicializar Firebase
         dbRealtime = FirebaseDatabase.getInstance().getReference("iot_comandos")
 
         // 3. Vistas
         tvStatus = findViewById(R.id.tvStatus)
         fabMic = findViewById(R.id.fabMic)
 
-        // 4. Configurar Reconocimiento
+        // 4. Configurar el Recognizer
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
         setupRecognitionListener()
 
@@ -78,36 +79,44 @@ class VoiceControlActivity : AppCompatActivity() {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
             putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
 
-            // ¡IMPORTANTE! Forzamos el idioma del reconocedor al idioma de la app
+            // --- CORRECCIÓN CLAVE ---
+            // 1. Obtenemos el Locale completo (idioma + país)
             val locale = getLocaleForAppLanguage(currentLanguageId)
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, locale.toString())
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, locale.toString())
-            putExtra(RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE, locale.toString())
+            
+            // 2. Usamos toLanguageTag() para formato estándar (ej: "ja-JP" en vez de "ja")
+            // Esto asegura que Google reconozca el idioma específico y no use el default.
+            val languageTag = locale.toLanguageTag() 
+
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, languageTag)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, languageTag)
+            putExtra(RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE, languageTag)
         }
 
-        tvStatus.text = getString(R.string.voz_iot_escuchando) // "Escuchando..."
+        tvStatus.text = getString(R.string.voz_iot_escuchando) 
         fabMic.isEnabled = false
 
         try {
             speechRecognizer?.startListening(intent)
+            Log.d(TAG, "Escuchando en idioma: ${intent.getStringExtra(RecognizerIntent.EXTRA_LANGUAGE)}")
         } catch (e: Exception) {
             Log.e(TAG, "Error al iniciar escucha", e)
             fabMic.isEnabled = true
         }
     }
 
-    // Función auxiliar para obtener el Locale correcto según tu LanguageManager
+    // --- CORRECCIÓN DE IDIOMAS ---
+    // Agregamos el país específico para evitar ambigüedades (especialmente en JA, ZH, EN)
     private fun getLocaleForAppLanguage(langId: String): Locale {
         return when (langId) {
-            "en" -> Locale.ENGLISH
-            "fr" -> Locale.FRENCH
-            "de" -> Locale.GERMAN
-            "it" -> Locale.ITALIAN
-            "pt" -> Locale("pt", "BR") // Portugués Brasil
-            "ja" -> Locale.JAPANESE
-            "zh" -> Locale.CHINESE
-            "ru" -> Locale("ru", "RU")
-            else -> Locale("es", "ES") // Default Español
+            "en" -> Locale("en", "US") // Inglés USA
+            "fr" -> Locale("fr", "FR") // Francia
+            "de" -> Locale("de", "DE") // Alemania
+            "it" -> Locale("it", "IT") // Italia
+            "pt" -> Locale("pt", "BR") // Brasil
+            "ja" -> Locale("ja", "JP") // Japón (Crítico para que funcione el Japonés)
+            "zh" -> Locale("zh", "CN") // China
+            "ru" -> Locale("ru", "RU") // Rusia
+            else -> Locale("es", "ES") // España/Latam por defecto
         }
     }
 
@@ -123,8 +132,9 @@ class VoiceControlActivity : AppCompatActivity() {
             }
 
             override fun onError(error: Int) {
+                // Manejo básico de errores para no trabar la UI
                 val mensaje = when (error) {
-                    SpeechRecognizer.ERROR_NO_MATCH -> getString(R.string.voz_iot_error) // "No te entendí"
+                    SpeechRecognizer.ERROR_NO_MATCH -> getString(R.string.voz_iot_error) 
                     SpeechRecognizer.ERROR_NETWORK -> "Error de red"
                     SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Faltan permisos"
                     else -> "Error ($error)"
@@ -136,7 +146,8 @@ class VoiceControlActivity : AppCompatActivity() {
             override fun onResults(results: Bundle?) {
                 val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 if (!matches.isNullOrEmpty()) {
-                    val command = matches[0].lowercase()
+                    // Convertimos a minúsculas para comparar fácil
+                    val command = matches[0].lowercase() 
                     processCommand(command)
                 } else {
                     fabMic.isEnabled = true
@@ -148,96 +159,84 @@ class VoiceControlActivity : AppCompatActivity() {
         })
     }
 
-    // --- LÓGICA MULTI-IDIOMA DE COMANDOS ---
-
+    // --- LÓGICA DE COMANDOS ---
     private fun processCommand(command: String) {
         val cmd = command.lowercase()
-        tvStatus.text = getString(R.string.voz_iot_enviado, cmd) // "Enviado: [texto]"
+        tvStatus.text = getString(R.string.voz_iot_enviado, cmd) 
 
-        // 1. Definimos listas de palabras clave para identificar OBJETOS y ACCIONES
+        // Listas de palabras clave
+        // Nota: En japonés el reconocedor devuelve Kanji/Hiragana, no Romaji.
 
-        // Objetos: LUZ
+        // Objeto: LUZ
         val wordsLight = listOf(
-            "luz", "foco", "bombilla", // Español
-            "light", "lamp", // Inglés
-            "lumière", "lampe", // Francés
-            "licht", "lampe", // Alemán
-            "luce", "lampada", // Italiano
-            "luz", "lâmpada", // Portugués
-            "denki", "hikari", "電気", // Japonés (Fonético y Kanji)
-            "deng", "guang", "灯", // Chino
-            "svet", "свет", "lampu" // Ruso
+            "luz", "foco", "bombilla", 
+            "light", "lamp", 
+            "lumière", "lampe", 
+            "licht", "lampe", 
+            "luce", "lampada", 
+            "luz", "lâmpada", 
+            "denki", "hikari", "電気", // Incluye Kanji
+            "deng", "guang", "灯", 
+            "svet", "свет", "lampu" 
         )
 
-        // Objetos: PUERTA
+        // Objeto: PUERTA
         val wordsDoor = listOf(
-            "puerta", // Español
-            "door", // Inglés
-            "porte", // Francés
-            "tür", // Alemán
-            "porta", // Italiano y Portugués
-            "doa", "tobira", "ドア", // Japonés
-            "men", "门", // Chino
-            "dver", "дверь" // Ruso
+            "puerta", "door", 
+            "porte", "tür", 
+            "porta", 
+            "doa", "tobira", "ドア", 
+            "men", "门", 
+            "dver", "дверь" 
         )
 
-        // Acción: ENCENDER / ACTIVAR (ON)
+        // Acción: ON
         val wordsOn = listOf(
-            "encender", "prender", "activar", "on", // Español / Inglés
+            "encender", "prender", "activar", "on", 
             "turn on", "switch on",
-            "allumer", // Francés
-            "an", "einschalten", // Alemán (licht an)
-            "accendere", // Italiano
-            "ligar", // Portugués
-            "tsukete", "on", "つけて", // Japonés
-            "kai", "da kai", "开", // Chino
-            "vklyuchit", "включить" // Ruso
+            "allumer", "an", "einschalten", 
+            "accendere", "ligar", 
+            "tsukete", "on", "つけて", 
+            "kai", "da kai", "开", 
+            "vklyuchit", "включить" 
         )
 
-        // Acción: APAGAR / DESACTIVAR (OFF)
+        // Acción: OFF
         val wordsOff = listOf(
-            "apagar", "desactivar", "off", // Español / Inglés
+            "apagar", "desactivar", "off", 
             "turn off", "switch off",
-            "éteindre", // Francés
-            "aus", "ausschalten", // Alemán
-            "spegnere", // Italiano
-            "desligar", // Portugués
-            "keshite", "off", "消して", // Japonés
-            "guan", "关", // Chino
-            "vyklyuchit", "выключить" // Ruso
+            "éteindre", "aus", "ausschalten", 
+            "spegnere", "desligar", 
+            "keshite", "off", "消して", 
+            "guan", "关", 
+            "vyklyuchit", "выключить" 
         )
 
-        // Acción: ABRIR (OPEN)
+        // Acción: ABRIR
         val wordsOpen = listOf(
-            "abrir", "abre", // Español / Port / Ita
-            "open", // Inglés
-            "ouvrir", // Francés
-            "öffnen", "auf", // Alemán
-            "aprire", // Italiano
-            "akete", "hirake", "開けて", // Japonés
-            "kai", "da kai", "开", "打开", // Chino
-            "otkryt", "otkroy", "открыть" // Ruso
+            "abrir", "abre", "open", 
+            "ouvrir", "öffnen", "auf", 
+            "aprire", 
+            "akete", "hirake", "開けて", 
+            "kai", "da kai", "开", "打开", 
+            "otkryt", "otkroy", "открыть" 
         )
 
-        // Acción: CERRAR (CLOSE)
+        // Acción: CERRAR
         val wordsClose = listOf(
-            "cerrar", "cierra", // Español
-            "close", "shut", // Inglés
-            "fermer", // Francés
-            "schließen", "zu", // Alemán
-            "chiudere", // Italiano
-            "fechar", // Portugués
-            "shimete", "tojite", "閉めて", // Japonés
-            "guan", "关", // Chino
-            "zakryt", "zakroy", "закрыть" // Ruso
+            "cerrar", "cierra", "close", "shut", 
+            "fermer", "schließen", "zu", 
+            "chiudere", "fechar", 
+            "shimete", "tojite", "閉めて", 
+            "guan", "关", 
+            "zakryt", "zakroy", "закрыть" 
         )
-
-        // 2. Lógica de coincidencia
-        // Verificamos si el comando contiene (OBJETO + ACCIÓN)
 
         var actionFound = false
 
-        // --- CASO: LUZ ---
+        // Lógica: Si contiene (OBJETO) y (ACCIÓN) -> Enviar Firebase
+
+        // 1. Caso Luz
         if (containsAny(cmd, wordsLight)) {
             if (containsAny(cmd, wordsOn)) {
                 enviarA_Firebase("ON")
@@ -248,7 +247,7 @@ class VoiceControlActivity : AppCompatActivity() {
             }
         }
 
-        // --- CASO: PUERTA ---
+        // 2. Caso Puerta
         if (!actionFound && containsAny(cmd, wordsDoor)) {
             if (containsAny(cmd, wordsOpen)) {
                 enviarA_Firebase("OPEN")
@@ -259,16 +258,13 @@ class VoiceControlActivity : AppCompatActivity() {
             }
         }
 
-        // --- FEEDBACK ---
         if (!actionFound) {
-            Toast.makeText(this, "Comando no reconocido en este idioma", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Comando no reconocido", Toast.LENGTH_SHORT).show()
         }
 
-        // Reactivar botón
         fabMic.isEnabled = true
     }
 
-    // Helper para buscar si alguna palabra de la lista está en el comando
     private fun containsAny(command: String, keywords: List<String>): Boolean {
         for (word in keywords) {
             if (command.contains(word)) return true
@@ -277,13 +273,12 @@ class VoiceControlActivity : AppCompatActivity() {
     }
 
     private fun enviarA_Firebase(accion: String) {
-        // Estructura: iot_comandos -> { "accion": "ON" }
         dbRealtime.child("accion").setValue(accion)
             .addOnSuccessListener {
                 Log.d(TAG, "Comando enviado: $accion")
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Error al enviar comando", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Error al enviar", Toast.LENGTH_SHORT).show()
             }
     }
 
