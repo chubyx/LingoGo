@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "820060246747",
+    "firebase_url": "https://lingogo-app-573cb-default-rtdb.firebaseio.com",
     "project_id": "lingogo-app-573cb",
     "storage_bucket": "lingogo-app-573cb.firebasestorage.app"
   },
@@ -35,6 +36,14 @@
           "android_info": {
             "package_name": "com.example.lingogo",
             "certificate_hash": "6e4b8481662473ca564f01050129c17f75b6600b"
+          }
+        },
+        {
+          "client_id": "820060246747-c9g4qfabokqfsf799s8fkne9nsn4a5pn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.lingogo",
+            "certificate_hash": "a5ee3356d9633f895fb0852dd0efdd039796f5c1"
           }
         },
         {
