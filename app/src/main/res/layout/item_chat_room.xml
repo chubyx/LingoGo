@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Layout para UNA FILA en la pestaña "Chats" -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -14,41 +13,62 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:scaleType="centerCrop"
-        tools:src="@drawable/ic_perfil_por_defecto" />
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginStart="16dp"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/tvChatRoomName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            tools:text="Nombre del Otro Usuario" />
-
-        <TextView
-            android:id="@+id/tvChatRoomLastMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#666666"
-            android:textSize="14sp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            tools:text="Este es el último mensaje de la conv..." />
-    </LinearLayout>
+        tools:src="@drawable/ic_launcher_background" /> <LinearLayout
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="8dp"
+    android:orientation="vertical">
 
     <TextView
-        android:id="@+id/tvChatRoomTimestamp"
+        android:id="@+id/tvChatRoomName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#999999"
-        android:textSize="12sp"
-        tools:text="10:45" />
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:text="Carlos Duque" />
+
+    <TextView
+        android:id="@+id/tvChatRoomLastMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#666666"
+        android:textSize="14sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        tools:text="Hola, ¿cómo estás?" />
+</LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="end"
+        android:minWidth="50dp">
+
+        <TextView
+            android:id="@+id/tvChatRoomTimestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#999999"
+            android:textSize="12sp"
+            android:layout_marginBottom="4dp"
+            tools:text="10:45" />
+
+        <TextView
+            android:id="@+id/tvUnreadCount"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:background="@drawable/bg_badge_circle"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            tools:text="3"
+            tools:visibility="visible" />
+    </LinearLayout>
 
 </LinearLayout>

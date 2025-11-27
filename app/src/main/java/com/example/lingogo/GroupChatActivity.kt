@@ -1,9 +1,9 @@
 package com.example.lingogo
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem // <-- ¡Importante!
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -34,6 +34,8 @@ class GroupChatActivity : AppCompatActivity() {
     private lateinit var rvMessages: RecyclerView
     private lateinit var etMessage: EditText
     private lateinit var btnSend: Button
+
+    // Vistas para Unirse
     private lateinit var inputLayout: LinearLayout
     private lateinit var layoutJoinGroup: LinearLayout
     private lateinit var tvJoinGroupName: TextView
@@ -44,10 +46,13 @@ class GroupChatActivity : AppCompatActivity() {
     private lateinit var currentUserName: String
     private lateinit var groupId: String
     private var isMember: Boolean = false
-    private var groupCreatorId: String = ""
 
-    private lateinit var messageAdapter: GroupMessageAdapter
-    private val messageList = mutableListOf<GroupMessage>()
+    // Variables de Admin
+    private var groupCreatorId: String = ""
+    private var myGroupMembers = mutableListOf<String>()
+
+    private lateinit var messageAdapter: MessageAdapter
+    private val messageList = mutableListOf<Message>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val prefs = getSharedPreferences("Ajustes", MODE_PRIVATE)
@@ -60,10 +65,9 @@ class GroupChatActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
-        // 1. Obtener IDs
         val currentUser = auth.currentUser
         if (currentUser == null) {
-            irALogin()
+            finish()
             return
         }
         currentUserId = currentUser.uid
@@ -72,79 +76,101 @@ class GroupChatActivity : AppCompatActivity() {
         val groupName = intent.getStringExtra("GROUP_NAME") ?: "Grupo"
 
         if (groupId.isEmpty()) {
-            Log.e(TAG, "No se recibió GROUP_ID. Cerrando.")
             finish()
             return
         }
 
-        // 3. Configurar Toolbar
+        // Enlazar Vistas
         toolbar = findViewById(R.id.toolbarGroupChat)
         setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true) // Muestra la flecha
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = groupName
 
-        // 4. Enlazar Vistas de Chat
         rvMessages = findViewById(R.id.rvGroupChatMessages)
         etMessage = findViewById(R.id.etGroupChatMessage)
         btnSend = findViewById(R.id.btnGroupSendMessage)
-        inputLayout = findViewById(R.id.inputLayout)
 
-        // 5. Enlazar Vistas de "Unirse"
+        inputLayout = findViewById(R.id.inputLayout)
         layoutJoinGroup = findViewById(R.id.layoutJoinGroup)
         tvJoinGroupName = findViewById(R.id.tvJoinGroupName)
         btnJoinGroup = findViewById(R.id.btnJoinGroup)
+
         tvJoinGroupName.text = "Unirte a \"$groupName\""
 
-        // 7. Cargar nombre del usuario y revisar membresía
         loadCurrentUserNameAndCheckMembership()
 
-        // 8. Listeners
-        btnSend.setOnClickListener {
-            sendMessage()
-        }
-        btnJoinGroup.setOnClickListener {
-            unirseAlGrupo()
-        }
+        btnSend.setOnClickListener { sendMessage() }
+        btnJoinGroup.setOnClickListener { unirseAlGrupo() }
     }
 
     private fun loadCurrentUserNameAndCheckMembership() {
-        // Obtenemos el nombre del usuario (lo necesitamos para chatear)
         db.collection("users").document(currentUserId).get()
             .addOnSuccessListener { userDoc ->
-                currentUserName = userDoc.getString("nombre") ?: "Usuario Anónimo"
-                btnSend.isEnabled = true
-            }
-            .addOnFailureListener {
-                currentUserName = "Usuario Anónimo"
-                btnSend.isEnabled = true
+                currentUserName = userDoc.getString("nombre") ?: "Usuario"
             }
 
-        // Comprobamos si el usuario es miembro de este grupo
-        db.collection("group_rooms").document(groupId).get()
-            .addOnSuccessListener { groupDoc ->
-                if (groupDoc != null && groupDoc.exists()) {
-                    groupCreatorId = groupDoc.getString("creadorId") ?: ""
+        db.collection("group_rooms").document(groupId)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) return@addSnapshotListener
 
-                    val participants = groupDoc.get("participants") as? List<String>
+                if (snapshot != null && snapshot.exists()) {
+                    val group = snapshot.toObject(Group::class.java)
+                    if (group != null) {
+                        // --- CORRECCIÓN DE ADMIN (Truco de seguridad) ---
+                        // Intentamos leer 'creatorId', si está vacío, probamos con 'creadorId'
+                        var adminId = group.creatorId
+                        if (adminId.isEmpty()) {
+                            adminId = snapshot.getString("creadorId") ?: ""
+                        }
+                        groupCreatorId = adminId
 
-                    if (participants != null && participants.contains(currentUserId)) {
-                        isMember = true
-                        mostrarChatUI(true)
-                        setupRecyclerView()
-                        loadMessages()
-                    } else {
-                        isMember = false
-                        mostrarChatUI(false)
+                        // Depuración: Avisar si soy Admin
+                        if (currentUserId == groupCreatorId) {
+                            // Log.d(TAG, "¡Eres el ADMIN de este grupo!")
+                        }
+
+                        // Leemos miembros
+                        val allMembers = mutableSetOf<String>()
+                        allMembers.addAll(group.members)
+                        allMembers.addAll(group.participants)
+                        myGroupMembers = allMembers.toMutableList()
+
+                        val amIMember = myGroupMembers.contains(currentUserId) || currentUserId == groupCreatorId
+
+                        if (amIMember) {
+                            if (!isMember) {
+                                isMember = true
+                                mostrarChatUI(true)
+                                setupRecyclerView()
+                                loadMessages()
+
+                                if (currentUserId == groupCreatorId && !myGroupMembers.contains(currentUserId)) {
+                                    unirseAlGrupoSilenciosamente()
+                                }
+                            }
+                        } else {
+                            if (isMember) {
+                                Toast.makeText(this, "Has sido eliminado del grupo.", Toast.LENGTH_LONG).show()
+                                finish()
+                            } else {
+                                isMember = false
+                                mostrarChatUI(false)
+                            }
+                        }
                     }
                 } else {
-                    Toast.makeText(this, "Este grupo ya no existe.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "El grupo ya no existe.", Toast.LENGTH_SHORT).show()
                     finish()
                 }
             }
-            .addOnFailureListener { e ->
-                Log.e(TAG, "Error al verificar membresía", e)
-                Toast.makeText(this, "Error al cargar grupo.", Toast.LENGTH_SHORT).show()
-            }
+    }
+
+    private fun unirseAlGrupoSilenciosamente() {
+        val updates = mapOf(
+            "members" to FieldValue.arrayUnion(currentUserId),
+            "participants" to FieldValue.arrayUnion(currentUserId)
+        )
+        db.collection("group_rooms").document(groupId).update(updates)
     }
 
     private fun mostrarChatUI(mostrarChat: Boolean) {
@@ -161,11 +187,10 @@ class GroupChatActivity : AppCompatActivity() {
 
     private fun unirseAlGrupo() {
         btnJoinGroup.isEnabled = false
-        Toast.makeText(this, "Uniéndote al grupo...", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Uniéndote...", Toast.LENGTH_SHORT).show()
 
-        // --- ¡CAMBIO! ---
-        // Al unirse, actualizamos 'participants' Y 'lastActivity'
         val updates = mapOf(
+            "members" to FieldValue.arrayUnion(currentUserId),
             "participants" to FieldValue.arrayUnion(currentUserId),
             "lastActivity" to FieldValue.serverTimestamp()
         )
@@ -173,34 +198,144 @@ class GroupChatActivity : AppCompatActivity() {
         db.collection("group_rooms").document(groupId)
             .update(updates)
             .addOnSuccessListener {
-                Log.d(TAG, "¡Usuario unido al grupo!")
                 Toast.makeText(this, "¡Te has unido!", Toast.LENGTH_SHORT).show()
-
-                isMember = true
-                mostrarChatUI(true)
-                setupRecyclerView()
-                loadMessages()
             }
-            .addOnFailureListener { e ->
-                Log.e(TAG, "Error al unirse al grupo", e)
-                Toast.makeText(this, "Error al unirte: ${e.message}", Toast.LENGTH_SHORT).show()
+            .addOnFailureListener {
+                Toast.makeText(this, "Error al unirse", Toast.LENGTH_SHORT).show()
                 btnJoinGroup.isEnabled = true
             }
     }
 
-    private fun setupRecyclerView() {
-        messageAdapter = GroupMessageAdapter(
-            messageList,
-            currentUserId,
-            groupCreatorId,
-            { message ->
-                showDeleteGroupMessageDialog(message)
+    // --- LÓGICA DE ADMIN MEJORADA ---
+
+    private fun mostrarIntegrantes() {
+        if (myGroupMembers.isEmpty()) return
+
+        val idsToFetch = myGroupMembers.take(10)
+        val namesList = mutableListOf<String>()
+        val idsList = mutableListOf<String>()
+
+        db.collection("users").whereIn("uid", idsToFetch)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (doc in documents) {
+                    val name = doc.getString("nombre") ?: "Usuario"
+                    val uid = doc.getString("uid") ?: ""
+
+                    // Si es Admin, le ponemos una marquita visual
+                    val displayName = if (uid == groupCreatorId) "$name (👑 Admin)" else name
+
+                    namesList.add(displayName)
+                    idsList.add(uid)
+                }
+                mostrarDialogoLista(namesList, idsList)
             }
-        )
-        rvMessages.adapter = messageAdapter
-        rvMessages.layoutManager = LinearLayoutManager(this).apply {
-            stackFromEnd = true
+    }
+
+    private fun mostrarDialogoLista(names: List<String>, ids: List<String>) {
+        val amIAdmin = (currentUserId == groupCreatorId)
+
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Integrantes del Grupo")
+
+        // Mostramos la lista simple
+        builder.setItems(names.toTypedArray()) { _, which ->
+            val selectedUserId = ids[which]
+            val selectedUserName = names[which]
+
+            // Si SOY ADMIN y toqué a OTRA persona, mostramos opciones
+            if (amIAdmin && selectedUserId != currentUserId) {
+                mostrarOpcionesDeAdmin(selectedUserId, selectedUserName)
+            } else {
+                // Si no soy admin, solo saludamos (o no hacemos nada)
+                // Toast.makeText(this, selectedUserName, Toast.LENGTH_SHORT).show()
+            }
         }
+        builder.setPositiveButton("Cerrar", null)
+        builder.show()
+    }
+
+    // --- NUEVO DIÁLOGO INTERMEDIO ---
+    // Esto hace que sea obvio que puedes expulsar
+    private fun mostrarOpcionesDeAdmin(userId: String, userName: String) {
+        val opciones = arrayOf("Ver Perfil", "Expulsar del Grupo ❌")
+
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Opciones para $userName")
+        builder.setItems(opciones) { _, which ->
+            when (which) {
+                0 -> { // Ver Perfil (Opcional, si quieres implementarlo)
+                    // val intent = Intent(this, UserProfileActivity::class.java)
+                    // intent.putExtra("USER_ID", userId)
+                    // startActivity(intent)
+                }
+                1 -> { // Expulsar
+                    confirmarExpulsion(userId, userName)
+                }
+            }
+        }
+        builder.show()
+    }
+
+    private fun confirmarExpulsion(userIdToDelete: String, userName: String) {
+        AlertDialog.Builder(this)
+            .setTitle("Expulsar Miembro")
+            .setMessage("¿Estás seguro de que quieres sacar a $userName?")
+            .setPositiveButton("Sí, Sacar") { _, _ ->
+                sacarUsuarioDelGrupo(userIdToDelete)
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun sacarUsuarioDelGrupo(userIdToDelete: String) {
+        val updates = mapOf(
+            "members" to FieldValue.arrayRemove(userIdToDelete),
+            "participants" to FieldValue.arrayRemove(userIdToDelete)
+        )
+
+        db.collection("group_rooms").document(groupId)
+            .update(updates)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Usuario expulsado.", Toast.LENGTH_SHORT).show()
+                enviarMensajeSistema("El administrador eliminó a un miembro.")
+            }
+    }
+
+    private fun enviarMensajeSistema(texto: String) {
+        val messageMap = hashMapOf(
+            "senderId" to "SYSTEM",
+            "text" to texto,
+            "timestamp" to FieldValue.serverTimestamp()
+        )
+        db.collection("group_rooms").document(groupId)
+            .collection("messages").add(messageMap)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        if (isMember) {
+            menu?.add(0, 1, 0, "Ver Integrantes")
+        }
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == 1) {
+            mostrarIntegrantes()
+            return true
+        }
+        if (item.itemId == android.R.id.home) {
+            finish()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    // --- CHAT ---
+    private fun setupRecyclerView() {
+        messageAdapter = MessageAdapter(messageList, currentUserId) {}
+        rvMessages.adapter = messageAdapter
+        rvMessages.layoutManager = LinearLayoutManager(this).apply { stackFromEnd = true }
     }
 
     private fun loadMessages() {
@@ -208,14 +343,14 @@ class GroupChatActivity : AppCompatActivity() {
             .collection("messages")
             .orderBy("timestamp", Query.Direction.ASCENDING)
             .addSnapshotListener { snapshots, e ->
-                if (e != null) { Log.w(TAG, "Error al escuchar mensajes de grupo", e); return@addSnapshotListener }
+                if (e != null) return@addSnapshotListener
                 if (snapshots != null) {
                     messageList.clear()
-                    for (document in snapshots.documents) {
-                        val message = document.toObject(GroupMessage::class.java)
-                        if (message != null) {
-                            message.id = document.id
-                            messageList.add(message)
+                    for (doc in snapshots.documents) {
+                        val msg = doc.toObject(Message::class.java)
+                        if (msg != null) {
+                            msg.id = doc.id
+                            messageList.add(msg)
                         }
                     }
                     messageAdapter.notifyDataSetChanged()
@@ -226,120 +361,24 @@ class GroupChatActivity : AppCompatActivity() {
 
     private fun sendMessage() {
         val text = etMessage.text.toString().trim()
-        if (text.isEmpty()) { return }
+        if (text.isEmpty()) return
+        etMessage.setText("")
 
         val messageMap = hashMapOf(
             "senderId" to currentUserId,
-            "senderName" to currentUserName,
             "text" to text,
             "timestamp" to FieldValue.serverTimestamp()
         )
-        etMessage.setText("")
 
         db.collection("group_rooms").document(groupId)
-            .collection("messages")
-            .add(messageMap)
-            .addOnSuccessListener {
-                Log.d(TAG, "Mensaje de grupo enviado!")
-                // ¡CAMBIO! Ahora llamamos a la función genérica
-                updateGroupLastActivity(text)
-            }
-            .addOnFailureListener { e ->
-                Log.w(TAG, "Error al enviar mensaje de grupo", e)
-                etMessage.setText(text)
-            }
-    }
+            .collection("messages").add(messageMap)
 
-    // ¡CAMBIO! Esta función ahora actualiza CADA VEZ que se envía un mensaje
-    private fun updateGroupLastActivity(lastMessage: String) {
-        val roomData = hashMapOf<String, Any>(
-            "lastActivity" to FieldValue.serverTimestamp(),
-            "lastMessage" to lastMessage
-        )
-        // Usamos set con merge en lugar de update, por si acaso
         db.collection("group_rooms").document(groupId)
-            .set(roomData, SetOptions.merge())
-    }
-
-    private fun showDeleteGroupMessageDialog(message: GroupMessage) {
-        AlertDialog.Builder(this)
-            .setTitle("Borrar Mensaje")
-            .setMessage("¿Estás seguro de que quieres borrar este mensaje?")
-            .setPositiveButton("Sí, borrar") { _, _ ->
-                deleteGroupMessageFromFirestore(message)
-            }
-            .setNegativeButton("No", null)
-            .show()
-    }
-
-    private fun deleteGroupMessageFromFirestore(message: GroupMessage) {
-        db.collection("group_rooms").document(groupId)
-            .collection("messages").document(message.id)
-            .delete()
-            .addOnSuccessListener {
-                Log.d(TAG, "Mensaje de grupo borrado exitosamente")
-                Toast.makeText(this, "Mensaje eliminado", Toast.LENGTH_SHORT).show()
-                // --- ¡NUEVO! Actualizar el lastMessage después de borrar ---
-                updateLastMessageAfterDelete_Group()
-            }
-            .addOnFailureListener { e ->
-                Log.w(TAG, "Error al borrar mensaje de grupo", e)
-                Toast.makeText(this, "Error al borrar: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-    }
-
-    // --- ¡NUEVA FUNCIÓN! ---
-    /**
-     * Busca el *nuevo* último mensaje y actualiza la sala de grupo.
-     */
-    private fun updateLastMessageAfterDelete_Group() {
-        // 1. Buscar el nuevo último mensaje
-        db.collection("group_rooms").document(groupId)
-            .collection("messages")
-            .orderBy("timestamp", Query.Direction.DESCENDING) // El más nuevo primero
-            .limit(1) // Solo queremos uno
-            .get()
-            .addOnSuccessListener { messageSnapshots ->
-                val newLastMessageText: String
-                val newLastActivity: Any
-
-                if (messageSnapshots != null && !messageSnapshots.isEmpty) {
-                    // 2a. Si quedan mensajes, usamos ese
-                    val newLastMessage = messageSnapshots.documents[0].toObject(GroupMessage::class.java)
-                    newLastMessageText = newLastMessage?.text ?: "..."
-                    newLastActivity = newLastMessage?.timestamp ?: FieldValue.serverTimestamp()
-                } else {
-                    // 2b. Si no quedan mensajes, limpiamos el campo
-                    newLastMessageText = "Grupo vacío"
-                    newLastActivity = FieldValue.serverTimestamp()
-                }
-
-                // 3. Actualizar la sala de grupo
-                val roomUpdates = hashMapOf<String, Any>(
-                    "lastMessage" to newLastMessageText,
-                    "lastActivity" to newLastActivity
+            .update(
+                mapOf(
+                    "lastActivity" to FieldValue.serverTimestamp(),
+                    "lastMessage" to text
                 )
-
-                db.collection("group_rooms").document(groupId)
-                    .update(roomUpdates)
-                    .addOnFailureListener { e ->
-                        Log.w(TAG, "Error al actualizar lastMessage de grupo después de borrar", e)
-                    }
-            }
-    }
-
-    private fun irALogin() {
-        val intent = Intent(this, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-        finish()
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            onBackPressedDispatcher.onBackPressed()
-            return true
-        }
-        return super.onOptionsItemSelected(item)
+            )
     }
 }

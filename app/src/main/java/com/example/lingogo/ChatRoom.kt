@@ -21,8 +21,12 @@ data class ChatRoom(
     var otherUserName: String = "",
     var otherUserPhotoUrl: String = "",
 
-    // Datos del último mensaje (los añadiremos en un futuro)
+    // Datos del último mensaje
     var lastMessage: String = "Inicia la conversación...",
     @ServerTimestamp
-    var lastActivity: Date? = null
+    var lastActivity: Date? = null,
+
+    // --- NUEVO: Mapa para contar mensajes no leídos ---
+    // Clave = ID del usuario, Valor = Cantidad de mensajes sin leer
+    var unreadCounts: Map<String, Long> = emptyMap()
 )

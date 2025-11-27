@@ -4,18 +4,18 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
-import android.util.TypedValue // Importante
+import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import androidx.annotation.AttrRes // Importante
+import androidx.annotation.AttrRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.button.MaterialButton // Importante: Usamos MaterialButton
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -33,7 +33,6 @@ class CommunityActivity : AppCompatActivity() {
 
     // Vistas
     private lateinit var toolbar: Toolbar
-    // CAMBIO: Usamos MaterialButton para poder controlar el borde (stroke)
     private lateinit var btnTabChats: MaterialButton
     private lateinit var btnTabGrupos: MaterialButton
     private lateinit var btnTabForo: MaterialButton
@@ -61,7 +60,6 @@ class CommunityActivity : AppCompatActivity() {
     private var currentTabId: Int = R.id.btnTabForo
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // 1. APLICAR TEMA (Dinámico)
         val prefs = getSharedPreferences("Ajustes", MODE_PRIVATE)
         val idiomaGuardado = prefs.getString("idioma_seleccionado", "es") ?: "es"
         val themeId = LanguageManager.getThemeForLanguage(idiomaGuardado)
@@ -75,9 +73,8 @@ class CommunityActivity : AppCompatActivity() {
 
         toolbar = findViewById(R.id.toolbarCommunity)
         setSupportActionBar(toolbar)
-        supportActionBar?.title = getString(R.string.inicio_comunidad) // Usa el string traducible si lo tienes
+        supportActionBar?.title = getString(R.string.inicio_comunidad)
 
-        // Enlazar Vistas
         btnTabChats = findViewById(R.id.btnTabChats)
         btnTabGrupos = findViewById(R.id.btnTabGrupos)
         btnTabForo = findViewById(R.id.btnTabForo)
@@ -101,16 +98,13 @@ class CommunityActivity : AppCompatActivity() {
         }
     }
 
-    // --- FUNCIÓN AUXILIAR PARA OBTENER COLOR DEL TEMA ---
     private fun getThemeColor(@AttrRes attrResId: Int): Int {
         val typedValue = TypedValue()
         theme.resolveAttribute(attrResId, typedValue, true)
         return typedValue.data
     }
 
-    // --- FUNCIÓN PARA ACTUALIZAR COLORES DE LOS TABS ---
     private fun updateTabsColors(activeBtn: MaterialButton) {
-        // Obtenemos los colores del tema actual (Azul, Rojo, Verde...)
         val colorPrimary = getThemeColor(com.google.android.material.R.attr.colorPrimary)
         val colorOnPrimary = getThemeColor(com.google.android.material.R.attr.colorOnPrimary)
         val colorSurface = getThemeColor(com.google.android.material.R.attr.colorSurface)
@@ -119,16 +113,14 @@ class CommunityActivity : AppCompatActivity() {
 
         for (btn in buttons) {
             if (btn == activeBtn) {
-                // ESTILO ACTIVO: Fondo de color, texto blanco/negro
                 btn.backgroundTintList = ColorStateList.valueOf(colorPrimary)
                 btn.setTextColor(colorOnPrimary)
                 btn.strokeWidth = 0
             } else {
-                // ESTILO INACTIVO: Fondo superficie, texto y borde de color
                 btn.backgroundTintList = ColorStateList.valueOf(colorSurface)
                 btn.setTextColor(colorPrimary)
                 btn.setStrokeColor(ColorStateList.valueOf(colorPrimary))
-                btn.strokeWidth = 3 // Grosor del borde
+                btn.strokeWidth = 3
             }
         }
     }
@@ -171,7 +163,6 @@ class CommunityActivity : AppCompatActivity() {
             setupChatRoomRecyclerView()
             setupGroupRecyclerView()
 
-            // Restaurar pestaña activa
             when (currentTabId) {
                 R.id.btnTabChats -> mostrarPestañaChats()
                 R.id.btnTabGrupos -> mostrarPestañaGrupos()
@@ -250,10 +241,7 @@ class CommunityActivity : AppCompatActivity() {
         groupsListener?.remove()
 
         currentTabId = R.id.btnTabForo
-
-        // Actualizar colores dinámicamente
         updateTabsColors(btnTabForo)
-
         cargarPostsForo()
     }
 
@@ -268,10 +256,7 @@ class CommunityActivity : AppCompatActivity() {
         groupsListener?.remove()
 
         currentTabId = R.id.btnTabChats
-
-        // Actualizar colores dinámicamente
         updateTabsColors(btnTabChats)
-
         cargarChatRooms()
     }
 
@@ -286,10 +271,7 @@ class CommunityActivity : AppCompatActivity() {
         chatRoomsListener?.remove()
 
         currentTabId = R.id.btnTabGrupos
-
-        // Actualizar colores dinámicamente
         updateTabsColors(btnTabGrupos)
-
         cargarGrupos()
     }
 
@@ -335,35 +317,71 @@ class CommunityActivity : AppCompatActivity() {
 
     private fun cargarChatRooms() {
         if (currentUserId.isEmpty()) return
-        db.collection("chat_rooms")
-            .whereArrayContains("participants", currentUserId)
-            .get()
-            .addOnSuccessListener { snapshots ->
-                if (snapshots == null) return@addOnSuccessListener
-                chatRoomList.clear()
-                for (document in snapshots.documents) {
-                    val participants = document.get("participants") as? List<String>
-                    if (participants == null || participants.size < 2) continue
-                    val otherUserId = participants.find { it != currentUserId } ?: continue
 
-                    db.collection("users").document(otherUserId).get()
-                        .addOnSuccessListener { userDoc ->
-                            val chatRoom = ChatRoom(
-                                id = document.id,
-                                otherUserId = otherUserId,
-                                lastActivity = document.getTimestamp("lastActivity")?.toDate(),
-                                lastMessage = document.getString("lastMessage") ?: "..."
-                            )
-                            if (userDoc != null && userDoc.exists()) {
-                                chatRoom.otherUserName = userDoc.getString("nombre") ?: "Usuario"
-                                chatRoom.otherUserPhotoUrl = userDoc.getString("fotoUrl") ?: ""
-                            } else {
-                                chatRoom.otherUserName = "Usuario Desconocido"
-                            }
-                            chatRoomList.add(chatRoom)
-                            chatRoomList.sortByDescending { it.lastActivity }
-                            chatRoomAdapter.notifyDataSetChanged()
+        chatRoomsListener = db.collection("chat_rooms")
+            .whereArrayContains("participants", currentUserId)
+            .addSnapshotListener { snapshots, error ->
+                if (error != null) {
+                    Log.w(TAG, "Listen failed.", error)
+                    return@addSnapshotListener
+                }
+
+                if (snapshots != null) {
+                    val tempChatList = mutableListOf<ChatRoom>()
+                    var usersProcessed = 0
+                    val totalDocs = snapshots.size()
+
+                    if (totalDocs == 0) {
+                        chatRoomList.clear()
+                        chatRoomAdapter.notifyDataSetChanged()
+                        return@addSnapshotListener
+                    }
+
+                    for (document in snapshots.documents) {
+                        val participants = document.get("participants") as? List<String>
+                        if (participants == null || participants.size < 2) {
+                            usersProcessed++
+                            continue
                         }
+
+                        val otherUserId = participants.find { it != currentUserId } ?: continue
+
+                        // --- LECTURA SEGURA DEL MAPA ---
+                        // Leemos como Map<String, Any> para evitar errores de casteo
+                        val rawUnread = document.get("unreadCounts") as? Map<String, Any> ?: emptyMap()
+                        // Convertimos los valores a Long de forma segura
+                        val unreadCountsMap = rawUnread.mapValues {
+                            (it.value as? Number)?.toLong() ?: 0L
+                        }
+
+                        db.collection("users").document(otherUserId).get()
+                            .addOnSuccessListener { userDoc ->
+                                val chatRoom = ChatRoom(
+                                    id = document.id,
+                                    otherUserId = otherUserId,
+                                    lastActivity = document.getTimestamp("lastActivity")?.toDate(),
+                                    lastMessage = document.getString("lastMessage") ?: "...",
+                                    unreadCounts = unreadCountsMap
+                                )
+
+                                if (userDoc != null && userDoc.exists()) {
+                                    chatRoom.otherUserName = userDoc.getString("nombre") ?: "Usuario"
+                                    chatRoom.otherUserPhotoUrl = userDoc.getString("fotoUrl") ?: ""
+                                } else {
+                                    chatRoom.otherUserName = "Usuario Desconocido"
+                                }
+
+                                tempChatList.add(chatRoom)
+                                usersProcessed++
+
+                                if (usersProcessed == totalDocs) {
+                                    chatRoomList.clear()
+                                    chatRoomList.addAll(tempChatList)
+                                    chatRoomList.sortByDescending { it.lastActivity }
+                                    chatRoomAdapter.notifyDataSetChanged()
+                                }
+                            }
+                    }
                 }
             }
     }

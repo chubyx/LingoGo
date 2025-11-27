@@ -21,6 +21,7 @@ import com.example.lingogo.database.AppDatabase
 import com.example.lingogo.database.FavoriteWord
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging // <--- NUEVO IMPORT
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
@@ -94,6 +95,9 @@ class InitionActivity : AppCompatActivity() {
 
         // 5. Cargar datos iniciales
         checkUserSession()
+
+        // 6. Actualizar Token para Notificaciones (NUEVO)
+        actualizarTokenFCM()
     }
 
     private fun initViews() {
@@ -178,8 +182,6 @@ class InitionActivity : AppCompatActivity() {
             .update("activeLanguageId", nuevoIdiomaId)
             .addOnSuccessListener {
                 // 3. RECREAR LA ACTIVIDAD PARA APLICAR EL NUEVO COLOR
-                // Esto hará que onCreate se ejecute de nuevo, lea el nuevo ID de Prefs
-                // y aplique el setTheme correcto.
                 recreate()
             }
             .addOnFailureListener {
@@ -328,9 +330,34 @@ class InitionActivity : AppCompatActivity() {
             }
         }
     }
+
+    // ---------------------------------------------------------
+    // NOTIFICACIONES PUSH (FCM) - NUEVA FUNCIONALIDAD
+    // ---------------------------------------------------------
+    private fun actualizarTokenFCM() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(TAG, "Error obteniendo el token FCM", task.exception)
+                return@addOnCompleteListener
+            }
+
+            // 1. Obtener el nuevo token
+            val token = task.result
+
+            // 2. Guardarlo en el usuario actual
+            val userId = auth.currentUser?.uid
+            if (userId != null) {
+                dbFirestore.collection("users").document(userId)
+                    .update("fcmToken", token)
+                    .addOnFailureListener { e ->
+                        Log.e(TAG, "Error al guardar el token en Firestore", e)
+                    }
+            }
+        }
+    }
 }
 
-// Modelos (Si no los tienes en otro archivo)
+// Modelos
 data class DashboardData(
     val points: Int = 0,
     val streak: Int = 0,

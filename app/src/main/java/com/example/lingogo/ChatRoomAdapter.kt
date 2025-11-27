@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth // <--- Importante
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -25,6 +26,9 @@ class ChatRoomAdapter(
         val tvNombre: TextView = itemView.findViewById(R.id.tvChatRoomName)
         val tvLastMessage: TextView = itemView.findViewById(R.id.tvChatRoomLastMessage)
         val tvTimestamp: TextView = itemView.findViewById(R.id.tvChatRoomTimestamp)
+
+        // --- NUEVO: Referencia al globito rojo ---
+        val tvUnreadCount: TextView = itemView.findViewById(R.id.tvUnreadCount)
 
         fun bind(chatRoom: ChatRoom, onItemClick: (ChatRoom) -> Unit) {
             itemView.setOnClickListener {
@@ -45,28 +49,44 @@ class ChatRoomAdapter(
     override fun onBindViewHolder(holder: ChatRoomViewHolder, position: Int) {
         val chatRoom = chatRoomList[position]
 
-        // Llenar los datos
+        // 1. Llenar datos básicos
         holder.tvNombre.text = chatRoom.otherUserName
-        holder.tvLastMessage.text = chatRoom.lastMessage // (Por ahora estático)
+        holder.tvLastMessage.text = chatRoom.lastMessage
 
-        // Cargar la foto (si no, muestra el ícono por defecto)
+        // 2. Cargar foto
         if (chatRoom.otherUserPhotoUrl.isNotEmpty()) {
             Glide.with(holder.itemView.context)
                 .load(chatRoom.otherUserPhotoUrl)
                 .circleCrop()
                 .into(holder.ivFoto)
         } else {
-            holder.ivFoto.setImageResource(R.drawable.ic_perfil_por_defecto)
+            holder.ivFoto.setImageResource(R.drawable.ic_perfil_por_defecto) // Asegúrate de tener este drawable
         }
 
-        // Formatear la fecha
+        // 3. Formatear hora
         if (chatRoom.lastActivity != null) {
             holder.tvTimestamp.text = dateFormatter.format(chatRoom.lastActivity!!)
         } else {
             holder.tvTimestamp.text = ""
         }
 
-        // Asignar el clic
+        // 4. --- LÓGICA DEL CONTADOR DE NO LEÍDOS (NUEVO) ---
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+
+        if (currentUserId != null) {
+            // Buscamos en el mapa si hay un número para MI ID
+            // Si no existe o es null, usamos 0
+            val count = chatRoom.unreadCounts[currentUserId] ?: 0L
+
+            if (count > 0) {
+                holder.tvUnreadCount.text = count.toString()
+                holder.tvUnreadCount.visibility = View.VISIBLE
+            } else {
+                holder.tvUnreadCount.visibility = View.GONE
+            }
+        }
+
+        // 5. Asignar clic
         holder.bind(chatRoom, onItemClick)
     }
 }

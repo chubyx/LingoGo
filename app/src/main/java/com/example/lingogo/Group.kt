@@ -11,8 +11,11 @@ import java.util.Date
 data class Group(
     @Exclude var id: String = "",
     val nombre: String = "",
-    val creadorId: String = "",
-    val participants: List<String> = listOf(), // Lista de IDs de miembros
+    val creatorId: String = "", // ID del Creador/Admin
+
+    // Usamos dos listas por compatibilidad si cambiaste el nombre del campo en la BD
+    val members: List<String> = emptyList(),
+    val participants: List<String> = emptyList(),
 
     @ServerTimestamp
     val lastActivity: Date? = null,

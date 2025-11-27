@@ -8,6 +8,7 @@
     android:background="?attr/colorSurface"
     tools:context=".PerfilActivity">
 
+    <!-- BARRA SUPERIOR -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -17,6 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
+            app:title="Tu Perfil"
             app:titleTextColor="?attr/colorOnPrimary"
             app:navigationIconTint="?attr/colorOnPrimary" />
     </com.google.android.material.appbar.AppBarLayout>
@@ -32,6 +34,7 @@
             android:padding="16dp"
             android:gravity="center_horizontal">
 
+            <!-- FOTO DE PERFIL -->
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imgPerfil"
                 android:layout_width="120dp"
@@ -43,8 +46,7 @@
                 android:scaleType="centerCrop"
                 app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
                 app:strokeColor="?attr/colorPrimary"
-                app:strokeWidth="2dp"
-                android:contentDescription="Foto de Perfil" />
+                app:strokeWidth="2dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCambiarFoto"
@@ -54,6 +56,7 @@
                 android:text="Cambiar foto"
                 android:textColor="?attr/colorPrimary" />
 
+            <!-- TARJETA DE VISUALIZACIÓN (Display) -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardInfoDisplay"
                 style="?attr/materialCardViewElevatedStyle"
@@ -79,7 +82,7 @@
                         android:id="@+id/tvNombreUsuarioPerfil"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        tools:text="Cargando..."
+                        tools:text="Carlos"
                         android:textAppearance="?attr/textAppearanceTitleLarge"
                         android:textColor="?attr/colorOnSurface"
                         android:layout_marginBottom="16dp"/>
@@ -95,7 +98,39 @@
                         android:id="@+id/tvEmailUsuarioPerfil"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        tools:text="cargando@email.com"
+                        tools:text="email@ejemplo.com"
+                        android:textAppearance="?attr/textAppearanceBodyLarge"
+                        android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="16dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Idiomas"
+                        android:textAppearance="?attr/textAppearanceBodySmall"
+                        android:textColor="?attr/colorOnSurfaceVariant" />
+
+                    <TextView
+                        android:id="@+id/tvIdiomasPerfil"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="Español"
+                        android:textAppearance="?attr/textAppearanceBodyLarge"
+                        android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="16dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sobre mí"
+                        android:textAppearance="?attr/textAppearanceBodySmall"
+                        android:textColor="?attr/colorOnSurfaceVariant" />
+
+                    <TextView
+                        android:id="@+id/tvBioPerfil"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="..."
                         android:textAppearance="?attr/textAppearanceBodyLarge"
                         android:textColor="?attr/colorOnSurface"
                         android:layout_marginBottom="24dp"/>
@@ -109,9 +144,9 @@
                         android:textColor="?attr/colorOnPrimary" />
 
                 </LinearLayout>
-
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- TARJETA DE EDICIÓN (Edit) -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardInfoEdit"
                 style="?attr/materialCardViewElevatedStyle"
@@ -132,12 +167,39 @@
                         android:layout_height="wrap_content"
                         android:hint="Nombre"
                         android:layout_marginBottom="16dp">
-
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etNombreEditar"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="textPersonName" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Idiomas"
+                        android:layout_marginBottom="16dp">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etIdiomasEditar"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textCapSentences" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Sobre mí"
+                        android:layout_marginBottom="16dp">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etBioEditar"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textMultiLine"
+                            android:minLines="3"
+                            android:gravity="top"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <LinearLayout

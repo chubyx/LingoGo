@@ -1,6 +1,9 @@
 package com.example.lingogo
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -10,9 +13,11 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.lingogo.database.SettingsDataStore
@@ -41,17 +46,25 @@ class ConfigActivity : AppCompatActivity() {
 
     private var isLanguageSpinnerLoading = true
 
+    // --- NUEVO: LANZADOR PARA PEDIR PERMISO DE NOTIFICACIONES ---
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            Toast.makeText(this, "Notificaciones activadas", Toast.LENGTH_SHORT).show()
+            switchNotificaciones.isChecked = true
+        } else {
+            Toast.makeText(this, "Permiso denegado. No podrás recibir avisos.", Toast.LENGTH_LONG).show()
+            switchNotificaciones.isChecked = false
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         // ---------------------------------------------------------------
-        // 1. EL TRUCO: FORZAR EL COLOR DEL "CURSO" (NO DEL IDIOMA UI)
+        // 1. FORZAR EL COLOR DEL "CURSO"
         // ---------------------------------------------------------------
         val prefs = getSharedPreferences("Ajustes", MODE_PRIVATE)
-
-        // Leemos la variable "learning_language" (que se guarda en InitionActivity)
-        // Esta variable es la que decide si la app es Azul, Roja, Verde, etc.
         val cursoQueEstudio = prefs.getString("learning_language", "en") ?: "en"
-
-        // Aplicamos el tema basado en el CURSO, no en el idioma de la interfaz
         val themeId = LanguageManager.getThemeForLanguage(cursoQueEstudio)
         setTheme(themeId)
         // ---------------------------------------------------------------
@@ -63,6 +76,7 @@ class ConfigActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
+        // Enlazar Vistas
         toolbar = findViewById(R.id.toolbarConfig)
         setSupportActionBar(toolbar)
         supportActionBar?.title = getString(R.string.configuraci_n)
@@ -73,23 +87,39 @@ class ConfigActivity : AppCompatActivity() {
         radioTema = findViewById(R.id.radioTema)
         radioClaro = findViewById(R.id.radioClaro)
         radioOscuro = findViewById(R.id.radioOscuro)
-        //btnSubirLeccion = findViewById(R.id.btnSubirLeccion)
+        // btnSubirLeccion = findViewById(R.id.btnSubirLeccion) // Descomenta si tienes este botón en el XML
 
+        // Cargar estado inicial (Tema y Permiso de Notificaciones)
         loadInitialState()
 
-        // Configuramos el Spinner para mostrar el idioma ACTUAL DE LOS TEXTOS
-        // (No el del curso)
+        // Configurar Spinner
         val appLocales = AppCompatDelegate.getApplicationLocales()
         val currentUiLang = if (!appLocales.isEmpty) appLocales[0]?.language else "es"
         setupLanguageSpinner(currentUiLang ?: "es")
 
+        // Configurar Listeners (Clics)
         setupListeners()
     }
 
     private fun loadInitialState() {
+        // 1. Cargar Modo Oscuro/Claro
         runBlocking {
             val isDarkMode = settingsDataStore.isDarkMode.first()
             if (isDarkMode) radioOscuro.isChecked = true else radioClaro.isChecked = true
+        }
+
+        // 2. NUEVO: Verificar si ya tenemos permiso de notificaciones para marcar el switch
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val tienePermiso = ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+
+            // Ponemos el switch según la realidad del sistema
+            switchNotificaciones.isChecked = tienePermiso
+        } else {
+            // En Android 12 o inferior, el permiso es automático
+            switchNotificaciones.isChecked = true
         }
     }
 
@@ -97,7 +127,6 @@ class ConfigActivity : AppCompatActivity() {
         val adapter = LanguageSpinnerAdapter(this, LanguageManager.availableLanguages)
         spinnerIdioma.adapter = adapter
 
-        // Seleccionamos en el spinner el idioma que tienes configurado para leer
         val index = LanguageManager.availableLanguages.indexOfFirst { it.id == idiomaUiActual }
         if (index >= 0) {
             spinnerIdioma.setSelection(index, false)
@@ -106,18 +135,15 @@ class ConfigActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        // Listener para CAMBIAR SOLO EL TEXTO
+        // Listener Cambio de Idioma (Texto)
         spinnerIdioma.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 if (isLanguageSpinnerLoading) return
 
                 val selectedLangCode = LanguageManager.availableLanguages[position].id
-
-                // Verificamos cuál es el idioma de texto actual
                 val appLocales = AppCompatDelegate.getApplicationLocales()
                 val currentCode = if (!appLocales.isEmpty) appLocales[0]?.language else "es"
 
-                // Si seleccionas un idioma distinto, cambiamos los textos
                 if (selectedLangCode != currentCode) {
                     cambiarSoloIdiomaTexto(selectedLangCode)
                 }
@@ -125,6 +151,7 @@ class ConfigActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
+        // Listener Cambio de Tema (Oscuro/Claro)
         radioTema.setOnCheckedChangeListener { _, checkedId ->
             if (!isLanguageSpinnerLoading) {
                 val isDarkMode = (checkedId == R.id.radioOscuro)
@@ -136,6 +163,27 @@ class ConfigActivity : AppCompatActivity() {
             }
         }
 
+        // --- NUEVO: Listener Switch Notificaciones ---
+        switchNotificaciones.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                // Si el usuario ACTIVA el switch
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    // Verificamos si realmente tiene permiso
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                        // Si no tiene, lanzamos la ventanita del sistema para pedirlo
+                        requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    } else {
+                        Toast.makeText(this, "Notificaciones activas", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } else {
+                // Si el usuario DESACTIVA el switch
+                // Nota: No podemos quitar el permiso del sistema por código, pero avisamos visualmente
+                Toast.makeText(this, "Notificaciones desactivadas", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // Listener Botón Admin (Si existe)
         btnSubirLeccion?.setOnClickListener {
             btnSubirLeccion?.isEnabled = false
             btnSubirLeccion?.text = "Subiendo..."
@@ -144,16 +192,11 @@ class ConfigActivity : AppCompatActivity() {
     }
 
     private fun cambiarSoloIdiomaTexto(langCode: String) {
-        // 1. ESTO CAMBIA LOS STRINGS.XML (Textos)
-        // Al ejecutarse, la actividad se reinicia sola.
         val appLocale = LocaleListCompat.forLanguageTags(langCode)
         AppCompatDelegate.setApplicationLocales(appLocale)
-
-        // Nota: NO guardamos nada en "learning_language", así que el color no se toca.
         Toast.makeText(this, "Idioma de texto actualizado", Toast.LENGTH_SHORT).show()
     }
 
-    // --- LÓGICA DE ADMIN ---
     private fun subirIdiomasMasivos() {
         val batch = db.batch()
         val lessons = LessonContentProvider.getAllLessons()
@@ -193,7 +236,8 @@ class ConfigActivity : AppCompatActivity() {
     }
 }
 
-// --- DATA CLASSES NECESARIAS PARA QUE NO DE ERROR ---
+// --- CLASES DE DATOS (Incluidas para evitar errores de referencia) ---
+
 data class LessonData(
     val id: String,
     val languageId: String,
@@ -202,14 +246,15 @@ data class LessonData(
     val questions: List<QuizQuestionModel>
 )
 
+
+
+
+
 object LessonContentProvider {
     fun getAllLessons(): List<LessonData> {
-        // Tu lista de lecciones (Inglés, Francés, etc.) va aquí...
-        // He puesto una versión resumida para que compile, usa la tuya completa si la tienes.
+        // Ejemplo simple para que compile
         return listOf(
-            LessonData("en_1", "en", "Simple Present", "Verb To Be", listOf(
-                QuizQuestionModel("q1", 1, "I ___ a student.", listOf("is", "am", "are"), "am")
-            ))
+            LessonData("en_1", "en", "Simple Present", "Verb To Be", emptyList())
         )
     }
 }

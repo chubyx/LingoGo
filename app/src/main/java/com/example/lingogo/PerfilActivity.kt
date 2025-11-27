@@ -30,34 +30,41 @@ class PerfilActivity : AppCompatActivity() {
     // Firebase
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
-    private lateinit var storage: FirebaseStorage // ¡NUEVO!
+    private lateinit var storage: FirebaseStorage
     private lateinit var currentUserId: String
 
-    // --- ¡NUEVO! Launcher para el Selector de Fotos ---
-    // Este es el nuevo método para seleccionar fotos sin pedir permisos
+    // Selector de Fotos
     private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
             Log.d(TAG, "Foto seleccionada: $uri")
-            // La foto fue seleccionada, ahora la subimos
             uploadProfileImageToStorage(uri)
         } else {
             Log.d(TAG, "No se seleccionó ninguna foto.")
         }
     }
 
-    // Vistas
+    // --- VISTAS (Declaración de variables) ---
+    // Modo Lectura
     private lateinit var tvNombreUsuario: TextView
     private lateinit var tvEmailUsuario: TextView
+    private lateinit var tvIdiomas: TextView
+    private lateinit var tvBio: TextView
+    private lateinit var imgPerfil: ImageView
     private lateinit var cardInfoDisplay: CardView
     private lateinit var btnEditar: Button
-    private lateinit var etNombreEditar: EditText
+    private lateinit var btnCambiarFoto: Button
+
+    // Modo Edición (Aquí es donde te faltaban variables)
     private lateinit var cardInfoEdit: CardView
+    private lateinit var etNombreEditar: EditText
+    private lateinit var etIdiomasEditar: EditText
+    private lateinit var etBioEditar: EditText
     private lateinit var btnGuardar: Button
     private lateinit var btnCancelar: Button
+
+    // Otros
     private lateinit var btnCerrarSesion: Button
     private lateinit var toolbar: Toolbar
-    private lateinit var imgPerfil: ImageView // ¡NUEVO!
-    private lateinit var btnCambiarFoto: Button // ¡NUEVO!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val prefs = getSharedPreferences("Ajustes", MODE_PRIVATE)
@@ -67,33 +74,38 @@ class PerfilActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_perfil)
 
-        // Inicializar Firebase
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
-        storage = FirebaseStorage.getInstance() // ¡NUEVO!
+        storage = FirebaseStorage.getInstance()
 
-        // Configurar Toolbar
         toolbar = findViewById(R.id.toolbarPerfil)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "Tu Perfil"
 
-        // Enlazar vistas (Display)
+        // --- ENLAZAR VISTAS (findViewById) ---
+
+        // Lectura
         tvNombreUsuario = findViewById(R.id.tvNombreUsuarioPerfil)
         tvEmailUsuario = findViewById(R.id.tvEmailUsuarioPerfil)
+        tvIdiomas = findViewById(R.id.tvIdiomasPerfil)
+        tvBio = findViewById(R.id.tvBioPerfil)
+        imgPerfil = findViewById(R.id.imgPerfil)
         cardInfoDisplay = findViewById(R.id.cardInfoDisplay)
         btnEditar = findViewById(R.id.btnEditarPerfil)
+        btnCambiarFoto = findViewById(R.id.btnCambiarFoto)
 
-        // Enlazar vistas (Edición)
-        etNombreEditar = findViewById(R.id.etNombreEditar)
+        // Edición (Aquí se asignan los IDs del XML a las variables)
         cardInfoEdit = findViewById(R.id.cardInfoEdit)
+        etNombreEditar = findViewById(R.id.etNombreEditar)
+        etIdiomasEditar = findViewById(R.id.etIdiomasEditar)
+        etBioEditar = findViewById(R.id.etBioEditar)
+
+        // OJO: Aquí conectamos las variables con los IDs correctos
         btnGuardar = findViewById(R.id.btnGuardarCambios)
         btnCancelar = findViewById(R.id.btnCancelarEdicion)
 
-        // Vistas de Foto y Sesión
         btnCerrarSesion = findViewById(R.id.btnCerrarSesionPerfil)
-        imgPerfil = findViewById(R.id.imgPerfil) // ¡NUEVO!
-        btnCambiarFoto = findViewById(R.id.btnCambiarFoto) // ¡NUEVO!
 
         setupListeners()
     }
@@ -113,47 +125,39 @@ class PerfilActivity : AppCompatActivity() {
         btnEditar.setOnClickListener { toggleEditMode(true) }
         btnCancelar.setOnClickListener { toggleEditMode(false) }
         btnGuardar.setOnClickListener { guardarCambiosUsuario() }
-        btnCerrarSesion.setOnClickListener { cerrarSesionCompleta() }
 
-        // --- ¡NUEVO! Listener para cambiar foto ---
         btnCambiarFoto.setOnClickListener {
-            Log.d(TAG, "Botón 'Cambiar foto' presionado.")
-            // Inicia el selector de fotos moderno
             pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
+
+        btnCerrarSesion.setOnClickListener { cerrarSesionCompleta() }
     }
 
-    /**
-     * Carga los datos (nombre, email y foto) desde Firestore.
-     */
     private fun cargarDatosUsuario() {
         db.collection("users").document(currentUserId).get()
             .addOnSuccessListener { document ->
                 if (document != null && document.exists()) {
-                    val nombre = document.getString("nombre") ?: "Sin nombre"
-                    val email = document.getString("email") ?: "Sin email"
-                    val fotoUrl = document.getString("fotoUrl") // ¡NUEVO!
+                    val user = document.toObject(User::class.java)
 
-                    // Llenar vistas de Display
-                    tvNombreUsuario.text = nombre
-                    tvEmailUsuario.text = email
+                    if (user != null) {
+                        // Llenar Display
+                        tvNombreUsuario.text = user.nombre
+                        tvEmailUsuario.text = user.email
+                        tvIdiomas.text = if (user.idiomas.isNotEmpty()) user.idiomas else "No especificado"
+                        tvBio.text = if (user.descripcion.isNotEmpty()) user.descripcion else "Sin descripción"
 
-                    // --- ¡NUEVO! Cargar la foto usando Glide ---
-                    if (fotoUrl != null && fotoUrl.isNotEmpty()) {
-                        Glide.with(this)
-                            .load(fotoUrl)
-                            .circleCrop() // Opcional: para hacer la foto redonda
-                            .into(imgPerfil)
-                    } else {
-                        // Si no tiene foto, mostrar un ícono por defecto
-                        imgPerfil.setImageResource(R.drawable.ic_perfil_por_defecto) // (Necesitas crear este drawable)
+                        // Cargar Foto
+                        if (user.fotoUrl.isNotEmpty()) {
+                            Glide.with(this).load(user.fotoUrl).circleCrop().into(imgPerfil)
+                        } else {
+                            imgPerfil.setImageResource(R.drawable.ic_perfil_por_defecto)
+                        }
+
+                        // Pre-llenar campos de Edición
+                        etNombreEditar.setText(user.nombre)
+                        etIdiomasEditar.setText(user.idiomas)
+                        etBioEditar.setText(user.descripcion)
                     }
-
-                    // Pre-llenar vistas de Edición
-                    etNombreEditar.setText(nombre)
-
-                } else {
-                    Log.w(TAG, "No se encontró el documento del usuario")
                 }
             }
             .addOnFailureListener { e ->
@@ -161,82 +165,78 @@ class PerfilActivity : AppCompatActivity() {
             }
     }
 
-    /**
-     * Sube la imagen seleccionada a Firebase Storage.
-     */
     private fun uploadProfileImageToStorage(imageUri: Uri) {
-        // 1. Crear la referencia en Storage
-        // Guardaremos la foto en "profile_images/USER_ID.jpg"
         val storageRef = storage.reference.child("profile_images/$currentUserId.jpg")
-
         Toast.makeText(this, "Subiendo foto...", Toast.LENGTH_SHORT).show()
 
-        // 2. Subir el archivo
         storageRef.putFile(imageUri)
             .addOnSuccessListener {
-                Log.d(TAG, "Foto subida exitosamente a Storage.")
-                // 3. Obtener la URL de descarga
                 storageRef.downloadUrl.addOnSuccessListener { url ->
-                    Log.d(TAG, "URL de descarga obtenida: $url")
-                    // 4. Guardar la URL en Firestore
                     saveImageUrlToFirestore(url.toString())
                 }
             }
             .addOnFailureListener { e ->
-                Log.e(TAG, "Error al subir foto a Storage", e)
-                Toast.makeText(this, "Error al subir la foto", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Error al subir foto", Toast.LENGTH_SHORT).show()
             }
     }
 
-    /**
-     * Guarda la URL de la foto en el documento del usuario en Firestore.
-     */
     private fun saveImageUrlToFirestore(imageUrl: String) {
-        val updates = hashMapOf<String, Any>(
-            "fotoUrl" to imageUrl
-        )
-
-        db.collection("users").document(currentUserId).update(updates)
+        db.collection("users").document(currentUserId).update("fotoUrl", imageUrl)
             .addOnSuccessListener {
-                Log.d(TAG, "URL de la foto guardada en Firestore.")
-                Toast.makeText(this, "Foto de perfil actualizada", Toast.LENGTH_SHORT).show()
-                // Volver a cargar la imagen en la UI con Glide
+                Toast.makeText(this, "Foto actualizada", Toast.LENGTH_SHORT).show()
                 Glide.with(this).load(imageUrl).circleCrop().into(imgPerfil)
             }
-            .addOnFailureListener { e ->
-                Log.e(TAG, "Error al guardar URL en Firestore", e)
-                Toast.makeText(this, "Error al guardar la foto", Toast.LENGTH_SHORT).show()
-            }
     }
-
 
     private fun toggleEditMode(enModoEdicion: Boolean) {
         if (enModoEdicion) {
             cardInfoDisplay.visibility = View.GONE
             cardInfoEdit.visibility = View.VISIBLE
+            btnCambiarFoto.isEnabled = false
         } else {
             cardInfoDisplay.visibility = View.VISIBLE
             cardInfoEdit.visibility = View.GONE
+            btnCambiarFoto.isEnabled = true
         }
     }
 
     private fun guardarCambiosUsuario() {
         val nuevoNombre = etNombreEditar.text.toString().trim()
+        val nuevosIdiomas = etIdiomasEditar.text.toString().trim()
+        val nuevaBio = etBioEditar.text.toString().trim()
+
         if (nuevoNombre.isEmpty()) {
             etNombreEditar.error = "El nombre no puede estar vacío"
             return
         }
-        val updates = hashMapOf<String, Any>("nombre" to nuevoNombre)
+
+        // Mapa con TODOS los campos a actualizar
+        val updates = hashMapOf<String, Any>(
+            "nombre" to nuevoNombre,
+            "idiomas" to nuevosIdiomas,
+            "descripcion" to nuevaBio
+        )
+
+        btnGuardar.isEnabled = false
+        btnGuardar.text = "Guardando..."
 
         db.collection("users").document(currentUserId).update(updates)
             .addOnSuccessListener {
-                Log.d(TAG, "Datos actualizados en Firestore")
                 Toast.makeText(this, "Perfil actualizado", Toast.LENGTH_SHORT).show()
+
+                // Actualizar la vista Display manualmente para que sea inmediato
                 tvNombreUsuario.text = nuevoNombre
+                tvIdiomas.text = if (nuevosIdiomas.isNotEmpty()) nuevosIdiomas else "No especificado"
+                tvBio.text = if (nuevaBio.isNotEmpty()) nuevaBio else "Sin descripción"
+
                 toggleEditMode(false)
+                btnGuardar.isEnabled = true
+                btnGuardar.text = "Guardar"
             }
             .addOnFailureListener { e ->
-                Log.e(TAG, "Error al guardar cambios", e)
+                Toast.makeText(this, "Error al guardar", Toast.LENGTH_SHORT).show()
+                btnGuardar.isEnabled = true
+                btnGuardar.text = "Guardar"
             }
     }
 
@@ -248,7 +248,6 @@ class PerfilActivity : AppCompatActivity() {
             .build()
         val googleSignInClient = GoogleSignIn.getClient(this, gso)
         googleSignInClient.signOut().addOnCompleteListener {
-            Log.d(TAG, "Sesión de Google cerrada")
             irALogin()
         }
     }
